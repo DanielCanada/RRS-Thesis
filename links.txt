@@ -1,0 +1,10 @@
+Chrome Links: 
+https://forum.arduino.cc/t/pressbutton-to-capture-image-esp32-cam/603310
+https://randomnerdtutorials.com/esp32-cam-pir-motion-detector-photo-capture/
+https://randomnerdtutorials.com/esp32-cam-take-photo-save-microsd-card/
+https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior/blob/master/old/ESP32-CAM-Video-Recorder-junior-09x.ino
+https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior/blob/master/old/ESP32-CAM-Video-Recorder-junior-10x.ino
+https://www.microchip.com/forums/m1133159-p2.aspx
+https://www.microchip.com/forums/m453883.aspx
+https://www.electronicwings.com/pic/pic18f4550-usart
+https://www.edaboard.com/threads/software-serial-port-problem-damages-pic18f4550.305243/
