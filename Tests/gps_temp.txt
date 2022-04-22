@@ -1,0 +1,131 @@
+#define FREQ 12000000
+#define baud 9600
+#define spbrg_value (((FREQ/64)/baud)-1)
+#define rs LATA.F0
+#define rw LATA.F1
+#define en LATA.F2
+#define lcdport LATB
+unsigned char rx_data();
+void lcd_ini();
+void lcdcmd(unsigned char);
+void lcddata(unsigned char);
+
+unsigned char longi_data[12];
+unsigned char lati_data[12];
+unsigned char data,value=0;
+unsigned int i=0,pos;
+
+void main()
+{
+	TRISB=0;			// Set Port B as output port
+	LATB=0;
+	TRISA=0;
+	LATA=0;
+	SPBRG=spbrg_value;		// Fill SPBRG register to set the baud rate
+	RCSTA.SPEN=1;			// To activate serial port (Tx and Rx pins)                                    
+	RCSTA.CREN=1;			// To enable continuous reception
+	lcd_ini();
+	while(1)
+	{
+		data=rx_data();                     // Check the string '$GPGGA,'
+		if(data=='$')
+		{
+			data=rx_data();
+			if(data=='G')
+			{
+				data=rx_data();
+				if(data=='P');
+				{
+					data=rx_data();
+					if(data=='G');
+					{
+						data=rx_data();
+						if(data=='G')
+						{
+						data=rx_data();
+						if(data=='A')
+						{
+						data=rx_data();
+						if(data==',')
+						{
+						data=rx_data();
+						while(data!=',')
+						data=rx_data();
+						for(i=0;data!='N';i++)
+						data=rx_data();
+						lati_data[i]=data;  // Store the Latitude data
+						}
+						data=rx_data();
+						if(data==',')
+						{
+						for(i=0;data!='E';i++)
+						{
+						data=rx_data();
+						longi_data[i]=data;  // Store the Longitude data
+						}
+						}
+						i=0;
+						lcdcmd(0x80);
+						while(i<11)
+						{
+						lcddata(lati_data[i]);	// Print the Latitude data
+						i++;
+						}
+						i=0;
+						lcdcmd(0xC0);
+						while(i<12)
+						{
+						lcddata(longi_data[i]);	  // Print the Longitude data
+						i++;
+						}
+						}
+						}
+						}
+					}
+				}
+			}
+		}
+		Delay_ms(1000);
+		for(i=0;i<12;i++)
+		{
+			data=0;
+			lati_data[i]=0;
+			longi_data[i]=0;
+		}
+	}
+}
+
+unsigned char rx_data(void)
+{
+	while(PIR1.RCIF==0);		// Wait until RCIF gets low
+	return RCREG;			// Store data in Reception register
+}
+
+void lcd_ini()
+{
+	lcdcmd(0x38);		// Configure the LCD in 8-bit mode, 2 line and 5x7 font
+	lcdcmd(0x0C);		// Display On and Cursor Off
+	lcdcmd(0x01);		// Clear display screen
+	lcdcmd(0x06);		// Increment cursor
+	lcdcmd(0x80);		// Set cursor position to 1st line, 1st column
+}
+
+void lcdcmd(unsigned char cmdout)
+{
+	lcdport=cmdout;		//Send command to lcdport=PORTB
+	rs=0;						
+	rw=0;
+	en=1;
+	Delay_ms(10);
+	en=0;
+}
+
+void lcddata(unsigned char dataout)
+{
+	lcdport=dataout;	//Send data to lcdport=PORTB
+	rs=1;
+	rw=0;
+	en=1;
+	Delay_ms(10);
+	en=0;
+}

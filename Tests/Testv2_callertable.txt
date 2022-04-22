@@ -1,0 +1,5 @@
+main
+	__CC2DW
+	init_ports
+	init_interrupt
+interrupt

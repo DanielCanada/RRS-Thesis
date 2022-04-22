@@ -1,0 +1,15 @@
+0	1	mikroCPIC1618.exe -MSF -DBG -pP16F877A -DL -O11111114 -fo8 -N"C:\Users\User\Documents\Thesis\in_campus\my_int.mcppi" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\" -SP"C:\Users\User\Documents\Thesis\in_campus\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\" "my_int.c" "__Lib_Math.mcl" "__Lib_MathDouble.mcl" "__Lib_System.mcl" "__Lib_Delays.mcl"	 
+hint: 0	1139	Available RAM: 352 [bytes], Available ROM: 8192 [bytes]	 
+diagnostics: 0	122	Compilation Started	P16F877A.c
+diagnostics: 660	123	Compiled Successfully	P16F877A.c
+diagnostics: 0	122	Compilation Started	__Lib_Delays.c
+diagnostics: 123	123	Compiled Successfully	__Lib_Delays.c
+diagnostics: 0	122	Compilation Started	my_int.c
+diagnostics: 46	123	Compiled Successfully	my_int.c
+diagnostics: 0	127	All files Compiled in 109 ms	 
+hint: 0	1144	Used RAM (bytes): 5 (1%)  Free RAM (bytes): 347 (99%)	Used RAM (bytes): 5 (1%)  Free RAM (bytes): 347 (99%)
+hint: 0	1144	Used ROM (program words): 62 (1%)  Free ROM (program words): 8130 (99%)	Used ROM (program words): 62 (1%)  Free ROM (program words): 8130 (99%)
+diagnostics: 0	125	Project Linked Successfully	my_int.mcppi
+diagnostics: 0	128	Linked in 16 ms	 
+diagnostics: 0	129	Project 'my_int.mcppi' completed: 359 ms	 
+diagnostics: 0	103	Finished successfully: 01 Feb 2022, 18:11:03	my_int.mcppi

@@ -1,0 +1,101 @@
+// Start
+unsigned char Lat_Data[13];
+unsigned char Long_Data[13];
+void GPS_GetDataAndDisplayIt(void) {
+  unsigned char Temp = 0, Index = 0;
+  while (!UART1_Data_Ready());
+  Temp = UART1_Read();
+  if (Temp == '$') {
+    while (!UART1_Data_Ready());
+    Temp = UART1_Read();
+    if (Temp == 'G') {
+      while (!UART1_Data_Ready());
+      Temp = UART1_Read();
+      if (Temp == 'P') {
+        while (!UART1_Data_Ready());
+        Temp = UART1_Read();
+        if (Temp == 'G') {
+          while (!UART1_Data_Ready());
+          Temp = UART1_Read();
+          if (Temp == 'G') {
+            while (!UART1_Data_Ready());
+            Temp = UART1_Read();
+            if (Temp == 'A') {
+              UART1_Write_Text("GPGGA Detected: ");
+              while (!UART1_Data_Ready());
+              Temp = UART1_Read(); // skiping ','
+              /*while (Index>9) {
+                //UART1_Write(Temp); // Displaying Time
+                while (!UART1_Data_Ready());
+                Temp = UART1_Read();
+                Index++;
+              }*/
+              Index = 0;
+              UART1_Write_Text("LAT: "); // displaying Latitude data
+              //while (!UART1_Data_Ready());
+              Temp = UART1_Read(); // Skip ','
+              while (Temp != ',') {
+                Lat_Data[Index] = Temp;
+                UART1_Write(Temp); // Displaying latitude on LCD
+                //while (!UART1_Data_Ready());
+                Temp = UART1_Read();
+                Index++;
+              }
+              Index = 0;
+              UART1_Write_Text(Lat_Data);
+              //while (!UART1_Data_Ready());
+              Temp = UART1_Read(); // skip direction
+              //UART1_Write_Text(Temp); // Displaying Direction on LCD
+              UART1_Write_Text(" || ");
+              UART1_Write_Text("LNG: "); // displaying Longitude
+              while (!UART1_Data_Ready());  //skip ','
+              Temp = UART1_Read();
+              while (!UART1_Data_Ready());
+              Temp = UART1_Read();        // take first number
+              while (Temp != ',') {
+                Long_Data[Index] = Temp;
+                UART1_Write(Temp); // Displaying longi on LCD
+                //while (!UART1_Data_Ready());
+                Temp = UART1_Read();
+                Index++;
+              }
+              Index = 0;
+              UART1_Write_Text(" || ");
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+  }
+
+}
+
+void display_data()
+{
+    UART1_Write_Text("Latitude: ");
+    UART1_Write_Text(Lat_Data);
+    UART1_Write(10);
+    UART1_Write(13);
+    UART1_Write_Text("Longitude: ");
+    UART1_Write_Text(Long_Data);
+    UART1_Write(10);
+    UART1_Write(13);
+    UART1_Write_Text("---------------------");
+    UART1_Write(10);
+    UART1_Write(13);
+}
+
+void main() {
+  UART1_Init(9600); // Initialize UART module at 9600 bps
+  Delay_ms(100); // Wait for UART module to stabilize
+
+  while (1) {
+    GPS_GetDataAndDisplayIt();
+    //display_data();
+  }
+
+}

@@ -1,0 +1,13 @@
+0	1	mikroCPIC1618.exe -MSF -DBG -pP18F4550 -DL -O11111114 -fo8 -N"C:\Users\User\Documents\Thesis\Tests\GPS\GPS_Parser.mcppi" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\uses\P18\" -SP"C:\Users\User\Documents\Thesis\Tests\GPS\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\uses\P18\" "GPS_Parser.c" "__Lib_Math.mcl" "__Lib_MathDouble.mcl" "__Lib_System.mcl" "__Lib_Delays.mcl" "__Lib_CType.mcl" "__Lib_CString.mcl" "__Lib_CStdlib.mcl" "__Lib_Conversions.mcl" "__Lib_Sprintf.mcl" "__Lib_Sprinti.mcl" "__Lib_UART_c67.mcl"	 
+hint: 0	1139	Available RAM: 2027 [bytes], Available ROM: 32768 [bytes]	 
+diagnostics: 0	122	Compilation Started	GPS_Parser.c
+warning: 299	1509	Generated baud rate is 9615 bps (error = 0.16 percent)	GPS_Parser.c
+diagnostics: 384	123	Compiled Successfully	GPS_Parser.c
+hint: 118	1164	Variable 'rIndex' has been eliminated by optimizer	GPS_Parser.c
+diagnostics: 0	127	All files Compiled in 78 ms	 
+hint: 0	1144	Used RAM (bytes): 679 (33%)  Free RAM (bytes): 1348 (67%)	Used RAM (bytes): 679 (33%)  Free RAM (bytes): 1348 (67%)
+hint: 0	1144	Used ROM (bytes): 22030 (67%)  Free ROM (bytes): 10738 (33%)	Used ROM (bytes): 22030 (67%)  Free ROM (bytes): 10738 (33%)
+diagnostics: 0	125	Project Linked Successfully	GPS_Parser.mcppi
+diagnostics: 0	128	Linked in 78 ms	 
+diagnostics: 0	129	Project 'GPS_Parser.mcppi' completed: 188 ms	 
+diagnostics: 0	103	Finished successfully: 06 Apr 2022, 13:48:43	GPS_Parser.mcppi

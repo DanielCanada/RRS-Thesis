@@ -1,0 +1,16 @@
+0	1	mikroCPIC1618.exe -MSF -DBG -pP18F4550 -DL -O11111114 -fo8 -N"C:\Users\User\Documents\Thesis\Tests\GPS\GPS_parse_program_1.mcppi" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\uses\P18\" -SP"C:\Users\User\Documents\Thesis\Tests\GPS\" -SP"C:\Users\User\Documents\Thesis\Tests\GPS_kawat\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\uses\P18\" "GPS_parse_program_1.c" "__Lib_Math.mcl" "__Lib_MathDouble.mcl" "__Lib_System.mcl" "__Lib_Delays.mcl" "__Lib_UART_c67.mcl" "__Lib_LcdConsts.mcl" "__Lib_Lcd.mcl"	 
+hint: 0	1139	Available RAM: 2027 [bytes], Available ROM: 32768 [bytes]	 
+diagnostics: 0	122	Compilation Started	GPS_parse_program_1.c
+error: 22	324	Undeclared identifier 'RCSTAbits' in expression	GPS_parse_program_1.c
+error: 23	324	Undeclared identifier 'RCSTAbits' in expression	GPS_parse_program_1.c
+error: 24	324	Undeclared identifier 'INTCON2bits' in expression	GPS_parse_program_1.c
+error: 27	324	Undeclared identifier 'TRISBbits' in expression	GPS_parse_program_1.c
+error: 28	324	Undeclared identifier 'TRISBbits' in expression	GPS_parse_program_1.c
+error: 29	324	Undeclared identifier 'TRISBbits' in expression	GPS_parse_program_1.c
+error: 30	324	Undeclared identifier 'TRISBbits' in expression	GPS_parse_program_1.c
+error: 31	324	Undeclared identifier 'TRISBbits' in expression	GPS_parse_program_1.c
+error: 32	324	Undeclared identifier 'TRISBbits' in expression	GPS_parse_program_1.c
+error: 33	324	Undeclared identifier 'TRISBbits' in expression	GPS_parse_program_1.c
+error: 34	324	Undeclared identifier 'TRISBbits' in expression	GPS_parse_program_1.c
+error: 35	312	Internal error ''	GPS_parse_program_1.c
+error: 0	102	Finished (with errors): 23 Feb 2022, 22:22:58	GPS_parse_program_1.mcppi
