@@ -1,5 +1,5 @@
 #line 1 "C:/Users/User/Documents/Thesis/Tests/GPS/PIC18_GPS_UART.c"
-unsigned char IncData;
+char IncData;
 int x = 0;
 
 char RcvdMsg[60] = "";
@@ -19,46 +19,43 @@ char q, error, byte_read;
 
 void suart()
 {
- error = Soft_UART_Init(&PORTC, 7, 6, 9600, 0);
+ error = Soft_UART_Init(&PORTD, 7, 6, 9600, 0);
  if (error > 0) {
- PORTD.B0 = 1;
  UART1_Write_Text("FAIL!\x0D");
  UART1_Write(error);
 
  }
  Delay_ms(100);
  Delay_ms(1000);
-
- for (q = 'z'; q >= 'A'; q--) {
- Soft_UART_Write(q);
- Delay_ms(100);
- }
- Delay_ms(1000);
+#line 36 "C:/Users/User/Documents/Thesis/Tests/GPS/PIC18_GPS_UART.c"
 }
 
 void main() {
  suart();
-
+ UART1_Init(9600);
  Delay_ms(100);
  Soft_UART_Write(10);
  Soft_UART_Write(13);
+ IncData = 0;
 
 
  while(1)
  {
- IncData = Soft_UART_Read(&error);
+ byte_read = Soft_UART_Read(&error);
  if (error)
  {
- Soft_UART_Write('e');
- Soft_UART_Write('r');
- Soft_UART_Write('r');
- Soft_UART_Write('o');
- Soft_UART_Write('r');
+ Soft_UART_Write('&');
  }
  else
  {
- Soft_UART_Write(IncData);
-#line 93 "C:/Users/User/Documents/Thesis/Tests/GPS/PIC18_GPS_UART.c"
+ MsgTxt[IncData] = byte_read;
+ IncData++;
+ if(byte_read == '.')
+ {
+ IncData = 0;
+ UART1_Write_Text(MsgTxt);
+ }
+#line 96 "C:/Users/User/Documents/Thesis/Tests/GPS/PIC18_GPS_UART.c"
  }
  }
 

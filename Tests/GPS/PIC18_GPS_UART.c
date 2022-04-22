@@ -1,4 +1,4 @@
-unsigned char IncData;
+char IncData;
 int x =  0;
 
 char RcvdMsg[60] = "";
@@ -18,9 +18,8 @@ char q, error, byte_read;
 
 void suart()
 {
-  error = Soft_UART_Init(&PORTC, 7, 6, 9600, 0); // Initialize Soft UART at 14400 bps
+  error = Soft_UART_Init(&PORTD, 7, 6, 9600, 0); // Initialize Soft UART at 14400 bps
   if (error > 0) {
-    PORTD.B0 = 1;
     UART1_Write_Text("FAIL!\x0D");
     UART1_Write(error);                          // Signalize Init error
    // while(1) ;                            // Stop program
@@ -28,35 +27,39 @@ void suart()
   Delay_ms(100);
   Delay_ms(1000);
 
-  for (q = 'z'; q >= 'A'; q--) {          // Send bytes from 'z' downto 'A'
+  /*for (q = 'z'; q >= 'A'; q--) {          // Send bytes from 'z' downto 'A'
     Soft_UART_Write(q);
     Delay_ms(100);
   }
   Delay_ms(1000);
+  */
 }
 
 void main() {
   suart();
-  //UART1_Init(9600);               // Initialize UART module at 9600 bps
+  UART1_Init(9600);               // Initialize UART module at 9600 bps
   Delay_ms(100);                  // Wait for UART module to stabilize
   Soft_UART_Write(10);
   Soft_UART_Write(13);
+  IncData = 0;
   //Config();
 
   while(1)
   {      
-        IncData = Soft_UART_Read(&error);
+        byte_read = Soft_UART_Read(&error);
         if (error)
         {                            // If error was detected
-           Soft_UART_Write('e');
-           Soft_UART_Write('r');
-           Soft_UART_Write('r');
-           Soft_UART_Write('o');
-           Soft_UART_Write('r');
+           Soft_UART_Write('&');
         }
         else
         {
-            Soft_UART_Write(IncData);
+            MsgTxt[IncData] = byte_read;
+            IncData++;
+            if(byte_read == '.')
+            {
+              IncData = 0;
+              UART1_Write_Text(MsgTxt);
+            }
             /*if(IncData == '+'){RcvdCheck = 1;}
             if((IncData == 'C') && (RcvdCheck == 1)){RcvdCheck = 2;}
             if((IncData == 'M') && (RcvdCheck == 2)){RcvdCheck = 3;}
