@@ -19,7 +19,7 @@ char q, error, byte_read;
 
 void suart()
 {
- error = Soft_UART_Init(&PORTD, 7, 6, 9600, 0);
+ error = Soft_UART_Init(&PORTD, 7, 6, 4800, 0);
  if (error > 0) {
  UART1_Write_Text("FAIL!\x0D");
  UART1_Write(error);
@@ -27,38 +27,63 @@ void suart()
  }
  Delay_ms(100);
  Delay_ms(1000);
-#line 36 "C:/Users/User/Documents/Thesis/Tests/GPS/PIC18_GPS_UART.c"
+}
+
+void parse()
+{
+#line 49 "C:/Users/User/Documents/Thesis/Tests/GPS/PIC18_GPS_UART.c"
+ RcvdConf = 2;
+ if(RcvdConf == 2)
+ {
+ UART1_Write_Text("Number: ");
+ for(x = 7;x < 20;x++)
+ {
+ MsgMob[x-7] = RcvdMsg[x];
+ UART1_Write(MsgMob[x-7]);
+ }
+ UART1_Write(10);
+ UART1_Write(13);
+ UART1_Write_Text("Message: ");
+ for(x = 47;x < 58;x++)
+ {
+ MsgTxt[x-47] = RcvdMsg[x];
+ UART1_Write(MsgTxt[x-47]);
+ }
+ ClearBuffers();
+ }
 }
 
 void main() {
- suart();
- UART1_Init(9600);
+ UART1_Init(4800);
  Delay_ms(100);
- Soft_UART_Write(10);
- Soft_UART_Write(13);
+ suart();
  IncData = 0;
 
+ UART1_Write_Text("Received!");
+ UART1_Write_Text("\x0D");
 
- while(1)
+ while(RcvdConf != 2)
  {
  byte_read = Soft_UART_Read(&error);
+
  if (error)
  {
- Soft_UART_Write('&');
+ UART1_Write_Text("Error");
  }
  else
  {
- MsgTxt[IncData] = byte_read;
+ RcvdMsg[IncData] = byte_read;
  IncData++;
  if(byte_read == '.')
  {
  IncData = 0;
- UART1_Write_Text(MsgTxt);
- }
-#line 96 "C:/Users/User/Documents/Thesis/Tests/GPS/PIC18_GPS_UART.c"
- }
+ UART1_Write(RcvdMsg[46]);
+ parse();
+ strcpy(RcvdMsg,"");
  }
 
+ }
+ }
 }
 
 
@@ -76,13 +101,10 @@ void ClearBuffers()
 
 void Config()
 {
- Delay_ms(2000);
- UART1_Write_Text("ATE0\r\n");
+ UART1_Write_Text("AT\x0D");
  Delay_ms(1000);
- UART1_Write_Text("AT\r\n");
+ UART1_Write_Text("AT+CMGF=1\x0D");
  Delay_ms(1000);
- UART1_Write_Text("AT+CMGF=1\r\n");
- Delay_ms(1000);
- UART1_Write_Text("AT+CNMI=1,2,0,0,0\r\n");
+ UART1_Write_Text("AT+CNMI=1,2,0,0,0\x0D");
  Delay_ms(1000);
 }

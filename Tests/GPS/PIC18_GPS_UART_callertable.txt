@@ -1,5 +1,6 @@
 main
 	__CC2DW
+	UART1_Init
 	suart
 		Soft_UART_Init
 			Get_Fosc_kHz
@@ -10,10 +11,15 @@ main
 		UART1_Write_Text
 			UART1_Write
 		UART1_Write
-	UART1_Init
-	Soft_UART_Write
-		Delay_Cyc
-	Soft_UART_Read
-		Delay_Cyc
 	UART1_Write_Text
 		UART1_Write
+	Soft_UART_Read
+		Delay_Cyc
+	UART1_Write
+	parse
+		UART1_Write_Text
+			UART1_Write
+		UART1_Write
+		ClearBuffers
+			strcpy
+	strcpy

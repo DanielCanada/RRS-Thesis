@@ -8,6 +8,8 @@ char Auto = 0;
 char Confirm = 0;
 char cooldown = 0;
 char gps_taken = 0;
+char isComplete = 0;
+int vDuration = 9; // fixed duration in case of false trigger
 
 // latitude variables
 char lat_first[3];
@@ -209,15 +211,15 @@ void init_pins()
 void initGSM()
 {
    Usend("AT");
-   DELAY_MS(2000);
+   DELAY_MS(1000);
    Usend("AT+IPR=9600");
-   delay_ms(2000);
+   delay_ms(1000);
 }
 
 void sendStartSMS()
 {
    Usend("AT+CMGF=1");
-   delay_ms(1000);
+   delay_ms(500);
    UART1_WRITE_TEXT("AT+CMGS=\"+639153013461\"\x0D");  // replace this with your phone number
    delay_ms(1000);
    UART1_WRITE_TEXT("SYSTEM READY || ");
@@ -249,7 +251,7 @@ void sendStartSMS()
    delay_ms(500);
    UART1_WRITE(26);
    delay_ms(5000);
-   delay_ms(3000);
+   delay_ms(2000);
    UART1_WRITE_TEXT("AT+CMGS=\"+639233205775\"\x0D");  // replace this with your phone number
    delay_ms(1000);
    UART1_WRITE_TEXT("HELP! I am in danger, seek authorities/barangay officials. Coordinates: ");
@@ -279,20 +281,49 @@ void sendStartSMS()
    delay_ms(5000);
 }
 
-void vibrate()
-{
-  PORTD.F1 = 1;
-  delay_ms(5000);
-  /*while(Confirm == 0); // approx 10 seconds
-  {
-    //check_button3();
-    delay_ms(5000);
-    Confirm = 1;
-    PORTD.F1 = 0;
-  }*/
-  PORTD.F1 = 0;
-}
-
+ void vibrate()
+ {
+     while(isComplete == 0)
+     {
+        check_button3();
+        vDuration = vDuration - 1;
+        if(Confirm == 1)
+        {
+          PORTD.B0 = 0;
+          isComplete = 1;
+          UART1_Write_Text("CANCEL BUTTON PRESSED!\x0D");
+        }else if(vDuration == 0)
+        {
+          PORTD.B0 = 0;
+          isComplete = 1;
+          UART1_Write_Text("Exceeded Duration Limit, proceeding to send SMS...\x0D");
+        }else
+        {
+          UART1_Write_Text("Vibrate\x0D");
+          isComplete = 0;
+        }
+        delay_ms(100);
+        check_button3();
+        delay_ms(100);
+        check_button3();
+        delay_ms(100);
+        check_button3();
+        delay_ms(100);
+        check_button3();
+        delay_ms(100);
+        check_button3();
+        delay_ms(100);
+        check_button3();
+        delay_ms(100);
+        check_button3();
+        delay_ms(100);
+        check_button3();
+        delay_ms(100);
+        check_button3();
+     }
+     isComplete = 0;
+     vDuration = 9; // reset to default
+ }
 
 void main() {
   init_pins();
@@ -306,7 +337,8 @@ void main() {
    {
      if(Normal == 1)
      {
-       //vibrate(); // check if false trigger
+       PORTD.B0 = 1;
+       vibrate(); // check if false trigger
        if(Confirm == 0)
        {
          while(gps_taken == 0)

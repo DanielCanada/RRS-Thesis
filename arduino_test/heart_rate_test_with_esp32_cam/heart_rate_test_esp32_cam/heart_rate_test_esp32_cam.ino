@@ -16,6 +16,8 @@ long lastBeat = 0; //Time at which the last beat occurred
 float beatsPerMinute;
 int beatAvg;
 int read = 0;
+int noReadings = 0;
+bool incap = false;
 
 
 void setup() {  
@@ -27,6 +29,7 @@ void setup() {
   particleSensor.begin(I2CSensors, I2C_SPEED_FAST); //Use new I2C port, 400kHz speed
   particleSensor.setup(); //Configure sensor with default settings
   particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+
 }
 
 void loop() {
@@ -37,13 +40,12 @@ void loop() {
     //Serial.println("");
     if (checkForBeat(irValue) == true)                        //If a heart beat is detected
     {
-      //Serial.print("BPM: ");             
-      //Serial.print(beatAvg);
-      Serial.println("**************************************************");
+      Serial.println("-------------");
       Serial.print("BPM: ");             
       Serial.print(beatAvg);
       Serial.println("");
-      Serial.println("**************************************************");
+      Serial.println("-------------");
+      Serial.println("");
 
 
       delay(100);
@@ -63,11 +65,28 @@ void loop() {
           beatAvg += rates[x];
         beatAvg /= RATE_SIZE;
       }
+      if (beatAvg > 120){   // high BPM tolerance value
+        Serial.println("person is scared or running!");
+      }else{
+        incap = false;
+      }
     }
 
   }
   if (irValue < 7000){       //If no finger is detected or is not attached to wrist, it inform the user and put the average BPM to 0 or it will be stored for the next measure
      beatAvg=0;
-     Serial.println("Please Place Your finger");   
+     noReadings++;
+     if (noReadings > 1000){ // about 10 seconds of not detecting
+       incap = true;
+       noReadings = 0;
+     }
+     Serial.println("--------------------------------------------------");
+     if(incap){
+        Serial.println("person in danger!");
+        // signal pic to send transmission
+     }else{
+        Serial.println("Please Place Your finger");
+     }
+     Serial.println("--------------------------------------------------");  
   }
 }

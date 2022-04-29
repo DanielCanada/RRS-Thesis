@@ -18,7 +18,7 @@ char q, error, byte_read;
 
 void suart()
 {
-  error = Soft_UART_Init(&PORTD, 7, 6, 9600, 0); // Initialize Soft UART at 14400 bps
+  error = Soft_UART_Init(&PORTD, 7, 6, 4800, 0); // Initialize Soft UART at 9600 bps
   if (error > 0) {
     UART1_Write_Text("FAIL!\x0D");
     UART1_Write(error);                          // Signalize Init error
@@ -26,76 +26,78 @@ void suart()
   }
   Delay_ms(100);
   Delay_ms(1000);
+}
 
-  /*for (q = 'z'; q >= 'A'; q--) {          // Send bytes from 'z' downto 'A'
-    Soft_UART_Write(q);
-    Delay_ms(100);
+void parse()
+{
+  /*
+  if(IncData == '+'){RcvdCheck = 1;}
+  if((IncData == 'C') && (RcvdCheck == 1)){RcvdCheck = 2;}
+  if((IncData == 'M') && (RcvdCheck == 2)){RcvdCheck = 3;}
+  if((IncData == 'T') && (RcvdCheck == 3)){RcvdCheck = 4;}
+  if(RcvdCheck == 4){index = 0;RcvdConf = 1; RcvdCheck = 0;}
+
+  if(RcvdConf == 1)
+  {
+      if(IncData == '\n'){RcvdEnd++;}
+      if(RcvdEnd == 3){RcvdEnd = 0;}
+      RcvdMsg[index] = IncData;
+
+      index++;
+      if(RcvdEnd == 2){RcvdConf = 2;MsgLength = index-2;index = 0;}
+  } */
+  RcvdConf = 2;
+  if(RcvdConf == 2)
+  {
+      UART1_Write_Text("Number: ");
+      for(x = 7;x < 20;x++)
+      {
+          MsgMob[x-7] = RcvdMsg[x];
+          UART1_Write(MsgMob[x-7]);
+      }
+      UART1_Write(10);
+      UART1_Write(13);
+      UART1_Write_Text("Message: ");
+      for(x = 47;x < 58;x++) // default MsgLength
+      {
+          MsgTxt[x-47] = RcvdMsg[x];
+          UART1_Write(MsgTxt[x-47]);
+      }
+      ClearBuffers();
   }
-  Delay_ms(1000);
-  */
 }
 
 void main() {
-  suart();
-  UART1_Init(9600);               // Initialize UART module at 9600 bps
+  UART1_Init(4800);               // Initialize UART module at 9600 bps
   Delay_ms(100);                  // Wait for UART module to stabilize
-  Soft_UART_Write(10);
-  Soft_UART_Write(13);
+  suart();
   IncData = 0;
   //Config();
+  UART1_Write_Text("Received!");
+  UART1_Write_Text("\x0D");
 
-  while(1)
+  while(RcvdConf != 2)
   {      
         byte_read = Soft_UART_Read(&error);
+        //IncData = Soft_UART_Read(&error);
         if (error)
         {                            // If error was detected
-           Soft_UART_Write('&');
+           UART1_Write_Text("Error");
         }
         else
         {
-            MsgTxt[IncData] = byte_read;
+            RcvdMsg[IncData] = byte_read;
             IncData++;
             if(byte_read == '.')
             {
               IncData = 0;
-              UART1_Write_Text(MsgTxt);
+              UART1_Write(RcvdMsg[46]);
+              parse();
+              strcpy(RcvdMsg,"");
             }
-            /*if(IncData == '+'){RcvdCheck = 1;}
-            if((IncData == 'C') && (RcvdCheck == 1)){RcvdCheck = 2;}
-            if((IncData == 'M') && (RcvdCheck == 2)){RcvdCheck = 3;}
-            if((IncData == 'T') && (RcvdCheck == 3)){RcvdCheck = 4;}
-            if(RcvdCheck == 4){index = 0;RcvdConf = 1; RcvdCheck = 0;}
 
-            if(RcvdConf == 1)
-            {
-                if(IncData == '\n'){RcvdEnd++;}
-                if(RcvdEnd == 3){RcvdEnd = 0;}
-                RcvdMsg[index] = IncData;
-
-                index++;
-                if(RcvdEnd == 2){RcvdConf = 0;MsgLength = index-2;index = 0;}
-                if(RcvdConf == 0)
-                {
-                    Soft_UART_Write('-');
-                    for(x = 4;x < 17;x++)
-                    {
-                        MsgMob[x-4] = RcvdMsg[x];
-                        Soft_UART_Write(MsgMob[x-4]);
-                    }
-                   Soft_UART_Write(10);
-                   Soft_UART_Write(13);
-                   Soft_UART_Write('-');
-                    for(x = 46;x < MsgLength;x++)
-                    {
-                        MsgTxt[x-46] = RcvdMsg[x];
-                        Soft_UART_Write(MsgTxt[x-46]);
-                    }
-                    ClearBuffers();
-                }
-            } */
         }
   }
-
 }
 
 
@@ -113,13 +115,10 @@ void ClearBuffers()
 
 void Config()
 {
-    Delay_ms(2000);
-    UART1_Write_Text("ATE0\r\n");
+    UART1_Write_Text("AT\x0D");
     Delay_ms(1000);
-    UART1_Write_Text("AT\r\n");
+    UART1_Write_Text("AT+CMGF=1\x0D");
     Delay_ms(1000);
-    UART1_Write_Text("AT+CMGF=1\r\n");
-    Delay_ms(1000);
-    UART1_Write_Text("AT+CNMI=1,2,0,0,0\r\n");
+    UART1_Write_Text("AT+CNMI=1,2,0,0,0\x0D");
     Delay_ms(1000);
 }
