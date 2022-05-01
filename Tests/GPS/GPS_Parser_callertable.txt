@@ -3,6 +3,10 @@ main
 	init_pins
 	UART1_Init
 	check_button1
+	vibrate
+		check_button3
+		UART1_Write_Text
+			UART1_Write
 	GPS_GetData
 		sprinti
 			_doprnti
@@ -100,3 +104,9 @@ main
 			UART1_Write
 		UART1_Write
 	check_button3
+	UART1_Write_Text
+		UART1_Write
+	act_sensor
+		check_button3
+		UART1_Write_Text
+			UART1_Write

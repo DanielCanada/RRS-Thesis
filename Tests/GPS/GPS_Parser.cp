@@ -9,6 +9,8 @@ char Auto = 0;
 char Confirm = 0;
 char cooldown = 0;
 char gps_taken = 0;
+char isComplete = 0;
+int vDuration = 9;
 
 
 char lat_first[3];
@@ -24,10 +26,10 @@ float long_second_f;
 
 void check_button1()
 {
- if(PORTB.B7 = 1)
+ if(PORTB.B7 == 1)
  {
  Delay_ms(100);
- if(PORTB.B7 = 0)
+ if(PORTB.B7 == 0)
  {
  Send_Ready = 1;
  Is_Duplicate = 0;
@@ -43,10 +45,10 @@ void check_button1()
 }
 void check_button2()
 {
- if(PORTB.B6 = 1)
+ if(PORTB.B6 == 1)
  {
  Delay_ms(100);
- if(PORTB.B6 = 0)
+ if(PORTB.B6 == 0)
  {
  Send_Ready = 1;
  Is_Duplicate = 0;
@@ -63,10 +65,10 @@ void check_button2()
 
 void check_button3()
 {
- if(PORTB.B5 = 1)
+ if(PORTB.B5 == 1)
  {
  Delay_ms(100);
- if(PORTB.B5 = 0)
+ if(PORTB.B5 == 0)
  {
 
  Is_Duplicate = 0;
@@ -80,6 +82,31 @@ void check_button3()
 
  }
 }
+
+ void act_sensor()
+ {
+ PORTD.B2 = 1;
+ while(isComplete == 0)
+ {
+ check_button3();
+ if(Confirm == 1)
+ {
+ isComplete = 1;
+ UART1_Write_Text("ABORT!\x0D");
+ PORTD.B2 = 0;
+ }else if(PORTD.B3 == 1)
+ {
+ isComplete = 1;
+ UART1_Write_Text("Detected abnormalities in sensor, proceeding to send SMS...\x0D");
+ PORTD.B2 = 0;
+ }else
+ {
+ UART1_Write_Text("Sensor still in use\x0D");
+ isComplete = 0;
+ }
+ }
+ isComplete = 0;
+ }
 
 void swap_raw_data()
 {
@@ -198,7 +225,7 @@ void init_pins()
  TRISB.B7 = 1;
  TRISB.B6 = 1;
  TRISB.B5 = 1;
- TRISD.F0 = 0;
+ TRISD.B0 = 0;
  TRISD.F1 = 0;
  TRISD.F2 = 0;
  TRISD.F3 = 1;
@@ -210,15 +237,15 @@ void init_pins()
 void initGSM()
 {
  Usend("AT");
- DELAY_MS(2000);
+ DELAY_MS(1000);
  Usend("AT+IPR=9600");
- delay_ms(2000);
+ delay_ms(1000);
 }
 
 void sendStartSMS()
 {
  Usend("AT+CMGF=1");
- delay_ms(1000);
+ delay_ms(500);
  UART1_WRITE_TEXT("AT+CMGS=\"+639153013461\"\x0D");
  delay_ms(1000);
  UART1_WRITE_TEXT("SYSTEM READY || ");
@@ -250,7 +277,7 @@ void sendStartSMS()
  delay_ms(500);
  UART1_WRITE(26);
  delay_ms(5000);
- delay_ms(3000);
+ delay_ms(2000);
  UART1_WRITE_TEXT("AT+CMGS=\"+639233205775\"\x0D");
  delay_ms(1000);
  UART1_WRITE_TEXT("HELP! I am in danger, seek authorities/barangay officials. Coordinates: ");
@@ -280,19 +307,55 @@ void sendStartSMS()
  delay_ms(5000);
 }
 
-void vibrate()
-{
- PORTD.F1 = 1;
- delay_ms(5000);
-#line 293 "C:/Users/User/Documents/Thesis/Tests/GPS/GPS_Parser.c"
- PORTD.F1 = 0;
-}
-
+ void vibrate()
+ {
+ while(isComplete == 0)
+ {
+ check_button3();
+ vDuration = vDuration - 1;
+ if(Confirm == 1)
+ {
+ PORTD.B0 = 0;
+ isComplete = 1;
+ UART1_Write_Text("CANCEL BUTTON PRESSED!\x0D");
+ }else if(vDuration == 0)
+ {
+ PORTD.B0 = 0;
+ isComplete = 1;
+ UART1_Write_Text("Exceeded Duration Limit, proceeding to send SMS...\x0D");
+ }else
+ {
+ UART1_Write_Text("Vibrate\x0D");
+ isComplete = 0;
+ }
+ delay_ms(100);
+ check_button3();
+ delay_ms(100);
+ check_button3();
+ delay_ms(100);
+ check_button3();
+ delay_ms(100);
+ check_button3();
+ delay_ms(100);
+ check_button3();
+ delay_ms(100);
+ check_button3();
+ delay_ms(100);
+ check_button3();
+ delay_ms(100);
+ check_button3();
+ delay_ms(100);
+ check_button3();
+ }
+ isComplete = 0;
+ vDuration = 9;
+ }
 
 void main() {
  init_pins();
- UART1_Init(9600);
+ UART1_init(9600);
  Delay_ms(100);
+ PORTD.B0 = 0;
 
  while (1) {
  check_button1();
@@ -301,7 +364,9 @@ void main() {
  {
  if(Normal == 1)
  {
-
+ PORTD.B0 = 1;
+ Confirm = 0;
+ vibrate();
  if(Confirm == 0)
  {
  while(gps_taken == 0)
@@ -312,24 +377,29 @@ void main() {
  gps_taken = 0;
  initGSM();
  sendStartSMS();
-#line 331 "C:/Users/User/Documents/Thesis/Tests/GPS/GPS_Parser.c"
- }else
- {
-
  }
- delay_ms(2000);
+
+ while(isComplete == 0)
+ {
+ check_button3();
+ if(Confirm == 1)
+ {
+ isComplete = 1;
+ PORTD.B1 = 0;
+ }
+ }
+ delay_ms(1000);
  Send_Ready = 0;
  Auto = 0;
  Normal = 0;
+ Confirm = 0;
+ isComplete = 0;
  }else if(Auto == 1)
  {
+ UART1_Write_Text("Mode 2: Automated... Initiating SENSOR...");
+ act_sensor();
 
- PORTD.F2 = 1;
-
-
- while(PORTD.F3 = 0);
- Confirm = 0;
- if(PORTD.F3 = 1)
+ if(confirm == 0)
  {
  while(gps_taken == 0)
  {
@@ -340,21 +410,27 @@ void main() {
  initGSM();
  sendStartSMS();
 
+ PORTD.B1 = 1;
+ UART1_Write_Text("\x0D Starting recording... press cancel button to stop\x0D");
+ delay_ms(100);
+ PORTD.B0 = 1;
+ delay_ms(2000);
+ PORTD.B0 = 0;
+ }
 
- PORTD.F0 = 1;
- while(confirm == 0)
+ while(isComplete == 0)
  {
  check_button3();
- if(confirm == 1)
+ if(Confirm == 1)
  {
- PORTD.F0 == 0;
+ isComplete = 1;
+ PORTD.B1 = 0;
  }
  }
- }
- delay_ms(2000);
  Send_Ready = 0;
  Auto = 0;
  Confirm = 0;
+ isComplete = 0;
  }else
  {
 

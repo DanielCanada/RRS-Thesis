@@ -25,10 +25,10 @@ float long_second_f;
 
 void check_button1()
 {
-  if(PORTB.B7 = 1)
+  if(PORTB.B7 == 1)
   {
      Delay_ms(100);
-     if(PORTB.B7 = 0)
+     if(PORTB.B7 == 0)
      {
        Send_Ready = 1;
        Is_Duplicate = 0;
@@ -44,10 +44,10 @@ void check_button1()
 }
 void check_button2()
 {
-  if(PORTB.B6 = 1)
+  if(PORTB.B6 == 1)
   {
      Delay_ms(100);
-     if(PORTB.B6 = 0)
+     if(PORTB.B6 == 0)
      {
        Send_Ready = 1;
        Is_Duplicate = 0;
@@ -64,10 +64,10 @@ void check_button2()
 
 void check_button3()
 {
-  if(PORTB.B5 = 1)
+  if(PORTB.B5 == 1)
   {
      Delay_ms(100);
-     if(PORTB.B5 = 0)
+     if(PORTB.B5 == 0)
      {
        //Send_Ready = 1;
        Is_Duplicate = 0;
@@ -81,6 +81,31 @@ void check_button3()
      //
   }
 }
+
+ void act_sensor()
+ {
+     PORTD.B2 = 1;
+     while(isComplete == 0)
+     {
+        check_button3();
+        if(Confirm == 1)
+        {
+          isComplete = 1;
+          UART1_Write_Text("ABORT!\x0D");
+          PORTD.B2 = 0;
+        }else if(PORTD.B3 == 1)
+        {
+          isComplete = 1;
+          UART1_Write_Text("Detected abnormalities in sensor, proceeding to send SMS...\x0D");
+          PORTD.B2 = 0;
+        }else
+        {
+          UART1_Write_Text("Sensor still in use\x0D");
+          isComplete = 0;
+        }
+     }
+     isComplete = 0;
+ }
 
 void swap_raw_data()
 {
@@ -199,7 +224,7 @@ void init_pins()
    TRISB.B7 = 1; // input
    TRISB.B6 = 1; // input
    TRISB.B5 = 1; // input
-   TRISD.F0 = 0; // Output Comm with ESP
+   TRISD.B0 = 0; // Output Comm with ESP
    TRISD.F1 = 0; // Output Vibration Motor
    TRISD.F2 = 0; // Output Heart Rate Sensor
    TRISD.F3 = 1; // input - acceptable BPM?
@@ -211,15 +236,15 @@ void init_pins()
 void initGSM()
 {
    Usend("AT");
-   DELAY_MS(1000);
+   DELAY_MS(500);
    Usend("AT+IPR=9600");
-   delay_ms(1000);
+   delay_ms(500);
+   Usend("AT+CMGF=1");
+   delay_ms(500);
 }
 
 void sendStartSMS()
 {
-   Usend("AT+CMGF=1");
-   delay_ms(500);
    UART1_WRITE_TEXT("AT+CMGS=\"+639153013461\"\x0D");  // replace this with your phone number
    delay_ms(1000);
    UART1_WRITE_TEXT("SYSTEM READY || ");
@@ -327,8 +352,10 @@ void sendStartSMS()
 
 void main() {
   init_pins();
-  UART1_Init(9600); // Initialize UART module at 9600 bps
+  UART1_init(9600);
   Delay_ms(100); // Wait for UART module to stabilize
+  initGSM();     // AT init with baud rate config
+  PORTD.B0 = 0;
 
   while (1) {
    check_button1();
@@ -338,6 +365,7 @@ void main() {
      if(Normal == 1)
      {
        PORTD.B0 = 1;
+       Confirm = 0;
        vibrate(); // check if false trigger
        if(Confirm == 0)
        {
@@ -347,61 +375,65 @@ void main() {
          }
          cooldown = 0;
          gps_taken = 0;
-         initGSM();     // AT init with baud rate config
          sendStartSMS();  // Send SMS
-         // signal cam to start
-         /*PORTD.F0 = 1;
-         while(confirm == 0)
+         PORTD.B1 = 1;   // record
+         UART1_Write_Text("\x0D Starting recording... press cancel button to stop\x0D");
+         delay_ms(100);
+         PORTD.B0 = 1;    // feedback, sign that sms is sent
+         delay_ms(1000);
+         PORTD.B0 = 0;
+         while(isComplete == 0)
          {
            check_button3();
-           if(confirm == 1)
+           if(Confirm == 1)
            {
-             PORTD.F0 == 0;
+             isComplete = 1;
+             PORTD.B1 = 0;
            }
          }
-         */
-       }else
-       {
-          // ABORT!
        }
-       delay_ms(2000);
+       // record (?)
+       delay_ms(1000);
        Send_Ready = 0;
        Auto = 0;
        Normal = 0;
+       Confirm = 0;
+       isComplete = 0;
      }else if(Auto == 1)
      {
-       // on heart rate sensor
-       PORTD.F2 = 1;
-       // loop to check if ESP returns BPM value is 0, high, or withing Normal range
-       // by finding if RD3 == 1 (send SMS)
-       while(PORTD.F3 = 0); // never ending lul
-       Confirm = 0;
-       if(PORTD.F3 = 1)
+       UART1_Write_Text("Mode 2: Automated... Initiating SENSOR...");
+       act_sensor(); // sensor on
+
+       if(confirm == 0)
        {
           while(gps_taken == 0)
-          {
-           GPS_GetData();
-          }
-          cooldown = 0;
-          gps_taken = 0;
-          initGSM();
-          sendStartSMS();
-          
-          // signal cam to start
-         PORTD.F0 = 1;
-         while(confirm == 0)
          {
-           check_button3();
-           if(confirm == 1)
-           {
-             PORTD.F0 == 0;
-           }
+           GPS_GetData();
+         }
+         cooldown = 0;
+         gps_taken = 0;
+         sendStartSMS();  // Send SMS
+         PORTD.B1 = 1;   // record
+         UART1_Write_Text("\x0D Starting recording... press cancel button to stop\x0D");
+         delay_ms(100);
+         PORTD.B0 = 1;    // feedback, sign that sms is sent
+         delay_ms(2000);
+         PORTD.B0 = 0;
+       }
+       // record (?)
+       while(isComplete == 0)
+       {
+         check_button3();
+         if(Confirm == 1)
+         {
+           isComplete = 1;
+           PORTD.B1 = 0;
          }
        }
-       delay_ms(2000);
        Send_Ready = 0;
        Auto = 0;
        Confirm = 0;
+       isComplete = 0;
      }else
      {
        //break;

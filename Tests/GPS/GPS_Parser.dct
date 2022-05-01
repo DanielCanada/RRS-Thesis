@@ -40,6 +40,7 @@ acqt1
 acqt1_bit
 acqt2
 acqt2_bit
+act_sensor
 actvie
 actvie_bit
 actvif
@@ -627,6 +628,7 @@ is_duplicate
 isalnum
 isalpha
 iscntrl
+iscomplete
 isdigit
 isgraph
 islower
@@ -1541,6 +1543,7 @@ vdelay_advanced_ms
 vdelay_ms
 vdirmag
 vdirmag_bit
+vduration
 vibrate
 vrefm
 vrefm_bit
