@@ -18,6 +18,8 @@ int beatAvg;
 int read = 0;
 int noReadings = 0;
 bool incap = false;
+int isSent = 0;
+const int SensorSignal = 12;
 
 
 void setup() {  
@@ -29,64 +31,81 @@ void setup() {
   particleSensor.begin(I2CSensors, I2C_SPEED_FAST); //Use new I2C port, 400kHz speed
   particleSensor.setup(); //Configure sensor with default settings
   particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+  pinMode(2, OUTPUT);
+  pinMode(SensorSignal, INPUT);
+}
 
+void getMeasurements() {
+    long irValue = particleSensor.getIR();    //Reading the IR value it will permit us to know if there's a finger on the sensor or not
+    if(irValue > 7000){                                           //If a finger is detected           
+      if (checkForBeat(irValue) == true)                        //If a heart beat is detected
+      {
+        Serial.println("-------------");
+        Serial.print("BPM: ");             
+        Serial.print(beatAvg);
+        Serial.println("");
+        Serial.println("-------------");
+        Serial.println("");
+        delay(100);
+        long delta = millis() - lastBeat;                   //Measure duration between two beats
+        lastBeat = millis();
+
+        beatsPerMinute = 60 / (delta / 1000.0);           //Calculating the BPM
+
+        if (beatsPerMinute < 255 && beatsPerMinute > 20)               //To calculate the average we strore some values (4) then do some math to calculate the average
+        {
+          rates[rateSpot++] = (byte)beatsPerMinute; //Store this reading in the array
+          rateSpot %= RATE_SIZE; //Wrap variable
+
+          //Take average of readings
+          beatAvg = 0;
+          for (byte x = 0 ; x < RATE_SIZE ; x++)
+            beatAvg += rates[x];
+          beatAvg /= RATE_SIZE;
+        }
+        if (beatAvg > 120){   // high BPM tolerance value
+          Serial.println("person is scared or running!");
+        }else{
+          incap = false;
+          isSent = 0;
+          if(isSent == 0){
+            digitalWrite(2, LOW);
+            delay(500);
+          }
+        }
+      }
+
+    }
+    if (irValue < 7000){       //If no finger is detected or is not attached to wrist, it inform the user and put the average BPM to 0 or it will be stored for the next measure
+      beatAvg=0;
+      noReadings++;
+      if (noReadings > 1000){ // about 10 seconds of not detecting
+        incap = true;
+        noReadings = 0;
+      }
+      Serial.println("--------------------------------------------------");
+      if(incap){
+          Serial.println("person in danger!");
+          isSent = 1;        // signal pic to send transmission
+          if(isSent == 1){
+            digitalWrite(2, HIGH);
+            delay(5000);
+            digitalWrite(2, LOW);
+            isSent = 2;
+          }
+      }else{
+          Serial.println("Please Place Your finger");
+      }
+      Serial.println("--------------------------------------------------");  
+    }
 }
 
 void loop() {
-  long irValue = particleSensor.getIR();    //Reading the IR value it will permit us to know if there's a finger on the sensor or not
-  if(irValue > 7000){                                           //If a finger is detected           
-    //Serial.print("BPM: ");
-    //Serial.print(beatAvg);
-    //Serial.println("");
-    if (checkForBeat(irValue) == true)                        //If a heart beat is detected
-    {
-      Serial.println("-------------");
-      Serial.print("BPM: ");             
-      Serial.print(beatAvg);
-      Serial.println("");
-      Serial.println("-------------");
-      Serial.println("");
-
-
-      delay(100);
-      long delta = millis() - lastBeat;                   //Measure duration between two beats
-      lastBeat = millis();
-
-      beatsPerMinute = 60 / (delta / 1000.0);           //Calculating the BPM
-
-      if (beatsPerMinute < 255 && beatsPerMinute > 20)               //To calculate the average we strore some values (4) then do some math to calculate the average
-      {
-        rates[rateSpot++] = (byte)beatsPerMinute; //Store this reading in the array
-        rateSpot %= RATE_SIZE; //Wrap variable
-
-        //Take average of readings
-        beatAvg = 0;
-        for (byte x = 0 ; x < RATE_SIZE ; x++)
-          beatAvg += rates[x];
-        beatAvg /= RATE_SIZE;
-      }
-      if (beatAvg > 120){   // high BPM tolerance value
-        Serial.println("person is scared or running!");
-      }else{
-        incap = false;
-      }
-    }
-
-  }
-  if (irValue < 7000){       //If no finger is detected or is not attached to wrist, it inform the user and put the average BPM to 0 or it will be stored for the next measure
-     beatAvg=0;
-     noReadings++;
-     if (noReadings > 1000){ // about 10 seconds of not detecting
-       incap = true;
-       noReadings = 0;
-     }
-     Serial.println("--------------------------------------------------");
-     if(incap){
-        Serial.println("person in danger!");
-        // signal pic to send transmission
-     }else{
-        Serial.println("Please Place Your finger");
-     }
-     Serial.println("--------------------------------------------------");  
+  int sensor_state = digitalRead(SensorSignal);
+  if(sensor_state == HIGH){
+    getMeasurements();
+  }else{
+    Serial.println("IDLE... awaiting signal from System Controller...");
+    delay(2000);
   }
 }

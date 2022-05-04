@@ -15,7 +15,6 @@ main
 		UART1_Write
 	Soft_UART_Read
 		Delay_Cyc
-	UART1_Write
 	parse
 		UART1_Write_Text
 			UART1_Write

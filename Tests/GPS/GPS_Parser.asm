@@ -167,12 +167,6 @@ L_act_sensor15:
 ;GPS_Parser.c,93 :: 		isComplete = 1;
 	MOVLW       1
 	MOVWF       _isComplete+0 
-;GPS_Parser.c,94 :: 		UART1_Write_Text("ABORT!\x0D");
-	MOVLW       ?lstr1_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr1_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
 ;GPS_Parser.c,95 :: 		PORTD.B2 = 0;
 	BCF         PORTD+0, 2 
 ;GPS_Parser.c,96 :: 		}else if(PORTD.B3 == 1)
@@ -183,23 +177,11 @@ L_act_sensor17:
 ;GPS_Parser.c,98 :: 		isComplete = 1;
 	MOVLW       1
 	MOVWF       _isComplete+0 
-;GPS_Parser.c,99 :: 		UART1_Write_Text("Detected abnormalities in sensor, proceeding to send SMS...\x0D");
-	MOVLW       ?lstr2_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr2_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
 ;GPS_Parser.c,100 :: 		PORTD.B2 = 0;
 	BCF         PORTD+0, 2 
 ;GPS_Parser.c,101 :: 		}else
 	GOTO        L_act_sensor20
 L_act_sensor19:
-;GPS_Parser.c,103 :: 		UART1_Write_Text("Sensor still in use\x0D");
-	MOVLW       ?lstr3_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr3_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
 ;GPS_Parser.c,104 :: 		isComplete = 0;
 	CLRF        _isComplete+0 
 ;GPS_Parser.c,105 :: 		}
@@ -245,8 +227,8 @@ _swap_raw_data:
 ;GPS_Parser.c,123 :: 		lat_first[1] = GPGGA_Data[12];
 	MOVF        _GPGGA_Data+12, 0 
 	MOVWF       _lat_first+1 
-;GPS_Parser.c,124 :: 		lat_first[0] = GPGGA_Data[15];
-	MOVF        _GPGGA_Data+15, 0 
+;GPS_Parser.c,124 :: 		lat_first[0] = '.';           //GPGGA_Data[15];
+	MOVLW       46
 	MOVWF       _lat_first+0 
 ;GPS_Parser.c,126 :: 		lat_second_i = ((lat_second_s[0] - '0') * 1000) + ((lat_second_s[1] - '0') * 100) + ((lat_second_s[2] - '0') * 10) + (lat_second_s[3] - '0');
 	MOVLW       48
@@ -315,8 +297,8 @@ _swap_raw_data:
 ;GPS_Parser.c,130 :: 		long_first[1] = GPGGA_Data[26];
 	MOVF        _GPGGA_Data+26, 0 
 	MOVWF       _long_first+1 
-;GPS_Parser.c,131 :: 		long_first[0] = GPGGA_Data[29];
-	MOVF        _GPGGA_Data+29, 0 
+;GPS_Parser.c,131 :: 		long_first[0] = '.';          //GPGGA_Data[29];
+	MOVLW       46
 	MOVWF       _long_first+0 
 ;GPS_Parser.c,132 :: 		long_second_s[0] = GPGGA_Data[27];
 	MOVF        _GPGGA_Data+27, 0 
@@ -567,11 +549,11 @@ L_GPS_GetData42:
 	MOVWF       FARG_sprinti_wh+0 
 	MOVLW       hi_addr(GPS_GetData_clk_L0+0)
 	MOVWF       FARG_sprinti_wh+1 
-	MOVLW       ?lstr_4_GPS_Parser+0
+	MOVLW       ?lstr_1_GPS_Parser+0
 	MOVWF       FARG_sprinti_f+0 
-	MOVLW       hi_addr(?lstr_4_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr_1_GPS_Parser+0)
 	MOVWF       FARG_sprinti_f+1 
-	MOVLW       higher_addr(?lstr_4_GPS_Parser+0)
+	MOVLW       higher_addr(?lstr_1_GPS_Parser+0)
 	MOVWF       FARG_sprinti_f+2 
 	MOVF        _lat_second_i+0, 0 
 	MOVWF       FARG_sprinti_wh+5 
@@ -615,11 +597,11 @@ L_GPS_GetData42:
 	MOVWF       FARG_sprintf_wh+0 
 	MOVLW       hi_addr(_lat_second_s+0)
 	MOVWF       FARG_sprintf_wh+1 
-	MOVLW       ?lstr_5_GPS_Parser+0
+	MOVLW       ?lstr_2_GPS_Parser+0
 	MOVWF       FARG_sprintf_f+0 
-	MOVLW       hi_addr(?lstr_5_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr_2_GPS_Parser+0)
 	MOVWF       FARG_sprintf_f+1 
-	MOVLW       higher_addr(?lstr_5_GPS_Parser+0)
+	MOVLW       higher_addr(?lstr_2_GPS_Parser+0)
 	MOVWF       FARG_sprintf_f+2 
 	MOVF        R0, 0 
 	MOVWF       FARG_sprintf_wh+5 
@@ -635,18 +617,18 @@ L_GPS_GetData42:
 	MOVWF       FARG_sprinti_wh+0 
 	MOVLW       hi_addr(GPS_GetData_clk2_L0+0)
 	MOVWF       FARG_sprinti_wh+1 
-	MOVLW       ?lstr_6_GPS_Parser+0
+	MOVLW       ?lstr_3_GPS_Parser+0
 	MOVWF       FARG_sprinti_f+0 
-	MOVLW       hi_addr(?lstr_6_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr_3_GPS_Parser+0)
 	MOVWF       FARG_sprinti_f+1 
-	MOVLW       higher_addr(?lstr_6_GPS_Parser+0)
+	MOVLW       higher_addr(?lstr_3_GPS_Parser+0)
 	MOVWF       FARG_sprinti_f+2 
 	MOVF        _long_second_i+0, 0 
 	MOVWF       FARG_sprinti_wh+5 
 	MOVF        _long_second_i+1, 0 
 	MOVWF       FARG_sprinti_wh+6 
 	CALL        _sprinti+0, 0
-;GPS_Parser.c,185 :: 		long_second_f = (long_second_i + 0.125) / 0.6;
+;GPS_Parser.c,185 :: 		long_second_f = (long_second_i + 0.125) / 0.6; // 0.125 default
 	MOVF        _long_second_i+0, 0 
 	MOVWF       R0 
 	MOVF        _long_second_i+1, 0 
@@ -700,11 +682,11 @@ L_GPS_GetData42:
 	MOVWF       FARG_sprintf_wh+0 
 	MOVLW       hi_addr(_long_second_s2+0)
 	MOVWF       FARG_sprintf_wh+1 
-	MOVLW       ?lstr_7_GPS_Parser+0
+	MOVLW       ?lstr_4_GPS_Parser+0
 	MOVWF       FARG_sprintf_f+0 
-	MOVLW       hi_addr(?lstr_7_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr_4_GPS_Parser+0)
 	MOVWF       FARG_sprintf_f+1 
-	MOVLW       higher_addr(?lstr_7_GPS_Parser+0)
+	MOVLW       higher_addr(?lstr_4_GPS_Parser+0)
 	MOVWF       FARG_sprintf_f+2 
 	MOVF        _long_second_f+0, 0 
 	MOVWF       FARG_sprintf_wh+5 
@@ -744,11 +726,11 @@ L_GPS_GetData45:
 	MOVWF       FARG_sprintf_wh+0 
 	MOVLW       hi_addr(_long_second_s+0)
 	MOVWF       FARG_sprintf_wh+1 
-	MOVLW       ?lstr_8_GPS_Parser+0
+	MOVLW       ?lstr_5_GPS_Parser+0
 	MOVWF       FARG_sprintf_f+0 
-	MOVLW       hi_addr(?lstr_8_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr_5_GPS_Parser+0)
 	MOVWF       FARG_sprintf_f+1 
-	MOVLW       higher_addr(?lstr_8_GPS_Parser+0)
+	MOVLW       higher_addr(?lstr_5_GPS_Parser+0)
 	MOVWF       FARG_sprintf_f+2 
 	MOVF        _long_second_f+0, 0 
 	MOVWF       FARG_sprintf_wh+5 
@@ -803,9 +785,9 @@ _Usend:
 	MOVWF       FARG_UART1_Write_Text_uart_text+1 
 	CALL        _UART1_Write_Text+0, 0
 ;GPS_Parser.c,218 :: 		UART1_Write_Text("\x0D");
-	MOVLW       ?lstr9_GPS_Parser+0
+	MOVLW       ?lstr6_GPS_Parser+0
 	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr9_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr6_GPS_Parser+0)
 	MOVWF       FARG_UART1_Write_Text_uart_text+1 
 	CALL        _UART1_Write_Text+0, 0
 ;GPS_Parser.c,219 :: 		}
@@ -824,11 +806,11 @@ _init_pins:
 	BSF         TRISB+0, 5 
 ;GPS_Parser.c,227 :: 		TRISD.B0 = 0; // Output Comm with ESP
 	BCF         TRISD+0, 0 
-;GPS_Parser.c,228 :: 		TRISD.F1 = 0; // Output Vibration Motor
+;GPS_Parser.c,228 :: 		TRISD.B1 = 0; // Output Vibration Motor
 	BCF         TRISD+0, 1 
-;GPS_Parser.c,229 :: 		TRISD.F2 = 0; // Output Heart Rate Sensor
+;GPS_Parser.c,229 :: 		TRISD.B2 = 0; // Output Heart Rate Sensor
 	BCF         TRISD+0, 2 
-;GPS_Parser.c,230 :: 		TRISD.F3 = 1; // input - acceptable BPM?
+;GPS_Parser.c,230 :: 		TRISD.B3 = 1; // input - acceptable BPM?
 	BSF         TRISD+0, 3 
 ;GPS_Parser.c,231 :: 		Send_Ready = 0;
 	CLRF        _Send_Ready+0 
@@ -845,17 +827,17 @@ _initGSM:
 
 ;GPS_Parser.c,236 :: 		void initGSM()
 ;GPS_Parser.c,238 :: 		Usend("AT");
-	MOVLW       ?lstr10_GPS_Parser+0
+	MOVLW       ?lstr7_GPS_Parser+0
 	MOVWF       FARG_Usend_cmd+0 
-	MOVLW       hi_addr(?lstr10_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr7_GPS_Parser+0)
 	MOVWF       FARG_Usend_cmd+1 
 	CALL        _Usend+0, 0
-;GPS_Parser.c,239 :: 		DELAY_MS(1000);
-	MOVLW       11
+;GPS_Parser.c,239 :: 		DELAY_MS(500);
+	MOVLW       6
 	MOVWF       R11, 0
-	MOVLW       38
+	MOVLW       19
 	MOVWF       R12, 0
-	MOVLW       93
+	MOVLW       173
 	MOVWF       R13, 0
 L_initGSM48:
 	DECFSZ      R13, 1, 1
@@ -867,17 +849,17 @@ L_initGSM48:
 	NOP
 	NOP
 ;GPS_Parser.c,240 :: 		Usend("AT+IPR=9600");
-	MOVLW       ?lstr11_GPS_Parser+0
+	MOVLW       ?lstr8_GPS_Parser+0
 	MOVWF       FARG_Usend_cmd+0 
-	MOVLW       hi_addr(?lstr11_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr8_GPS_Parser+0)
 	MOVWF       FARG_Usend_cmd+1 
 	CALL        _Usend+0, 0
-;GPS_Parser.c,241 :: 		delay_ms(1000);
-	MOVLW       11
+;GPS_Parser.c,241 :: 		delay_ms(500);
+	MOVLW       6
 	MOVWF       R11, 0
-	MOVLW       38
+	MOVLW       19
 	MOVWF       R12, 0
-	MOVLW       93
+	MOVLW       173
 	MOVWF       R13, 0
 L_initGSM49:
 	DECFSZ      R13, 1, 1
@@ -888,40 +870,40 @@ L_initGSM49:
 	BRA         L_initGSM49
 	NOP
 	NOP
-;GPS_Parser.c,242 :: 		}
-L_end_initGSM:
-	RETURN      0
-; end of _initGSM
-
-_sendStartSMS:
-
-;GPS_Parser.c,244 :: 		void sendStartSMS()
-;GPS_Parser.c,246 :: 		Usend("AT+CMGF=1");
-	MOVLW       ?lstr12_GPS_Parser+0
+;GPS_Parser.c,242 :: 		Usend("AT+CMGF=1");
+	MOVLW       ?lstr9_GPS_Parser+0
 	MOVWF       FARG_Usend_cmd+0 
-	MOVLW       hi_addr(?lstr12_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr9_GPS_Parser+0)
 	MOVWF       FARG_Usend_cmd+1 
 	CALL        _Usend+0, 0
-;GPS_Parser.c,247 :: 		delay_ms(500);
+;GPS_Parser.c,243 :: 		delay_ms(500);
 	MOVLW       6
 	MOVWF       R11, 0
 	MOVLW       19
 	MOVWF       R12, 0
 	MOVLW       173
 	MOVWF       R13, 0
-L_sendStartSMS50:
+L_initGSM50:
 	DECFSZ      R13, 1, 1
-	BRA         L_sendStartSMS50
+	BRA         L_initGSM50
 	DECFSZ      R12, 1, 1
-	BRA         L_sendStartSMS50
+	BRA         L_initGSM50
 	DECFSZ      R11, 1, 1
-	BRA         L_sendStartSMS50
+	BRA         L_initGSM50
 	NOP
 	NOP
+;GPS_Parser.c,244 :: 		}
+L_end_initGSM:
+	RETURN      0
+; end of _initGSM
+
+_sendStartSMS:
+
+;GPS_Parser.c,246 :: 		void sendStartSMS()
 ;GPS_Parser.c,248 :: 		UART1_WRITE_TEXT("AT+CMGS=\"+639153013461\"\x0D");  // replace this with your phone number
-	MOVLW       ?lstr13_GPS_Parser+0
+	MOVLW       ?lstr10_GPS_Parser+0
 	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr13_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr10_GPS_Parser+0)
 	MOVWF       FARG_UART1_Write_Text_uart_text+1 
 	CALL        _UART1_Write_Text+0, 0
 ;GPS_Parser.c,249 :: 		delay_ms(1000);
@@ -940,125 +922,119 @@ L_sendStartSMS51:
 	BRA         L_sendStartSMS51
 	NOP
 	NOP
-;GPS_Parser.c,250 :: 		UART1_WRITE_TEXT("SYSTEM READY || ");
+;GPS_Parser.c,250 :: 		UART1_WRITE_TEXT("ALERT! Transmitter no: ");
+	MOVLW       ?lstr11_GPS_Parser+0
+	MOVWF       FARG_UART1_Write_Text_uart_text+0 
+	MOVLW       hi_addr(?lstr11_GPS_Parser+0)
+	MOVWF       FARG_UART1_Write_Text_uart_text+1 
+	CALL        _UART1_Write_Text+0, 0
+;GPS_Parser.c,251 :: 		UART1_WRITE_TEXT(phoneNumber);
+	MOVLW       _phoneNumber+0
+	MOVWF       FARG_UART1_Write_Text_uart_text+0 
+	MOVLW       hi_addr(_phoneNumber+0)
+	MOVWF       FARG_UART1_Write_Text_uart_text+1 
+	CALL        _UART1_Write_Text+0, 0
+;GPS_Parser.c,252 :: 		UART1_WRITE_TEXT(" to save to server and see location, use: https://rrs-receiver-website.herokuapp.com/transmitters/newtransmitter?latitude=");
+	MOVLW       ?lstr12_GPS_Parser+0
+	MOVWF       FARG_UART1_Write_Text_uart_text+0 
+	MOVLW       hi_addr(?lstr12_GPS_Parser+0)
+	MOVWF       FARG_UART1_Write_Text_uart_text+1 
+	CALL        _UART1_Write_Text+0, 0
+;GPS_Parser.c,253 :: 		UART1_Write(lat_first[2]);
+	MOVF        _lat_first+2, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,254 :: 		UART1_Write(lat_first[1]);
+	MOVF        _lat_first+1, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,255 :: 		UART1_Write('.');
+	MOVLW       46
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,256 :: 		UART1_Write(lat_second_s[0]);
+	MOVF        _lat_second_s+0, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,257 :: 		UART1_Write(lat_second_s[1]);
+	MOVF        _lat_second_s+1, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,258 :: 		UART1_Write(lat_second_s[2]);
+	MOVF        _lat_second_s+2, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,259 :: 		UART1_Write(lat_second_s[3]);
+	MOVF        _lat_second_s+3, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,260 :: 		UART1_Write(lat_second_s[5]);
+	MOVF        _lat_second_s+5, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,261 :: 		UART1_Write(lat_second_s[6]);
+	MOVF        _lat_second_s+6, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,262 :: 		UART1_Write_Text("&longitude=");
+	MOVLW       ?lstr13_GPS_Parser+0
+	MOVWF       FARG_UART1_Write_Text_uart_text+0 
+	MOVLW       hi_addr(?lstr13_GPS_Parser+0)
+	MOVWF       FARG_UART1_Write_Text_uart_text+1 
+	CALL        _UART1_Write_Text+0, 0
+;GPS_Parser.c,263 :: 		UART1_Write('1');
+	MOVLW       49
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,264 :: 		UART1_Write('2');
+	MOVLW       50
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,265 :: 		UART1_Write('2');
+	MOVLW       50
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,266 :: 		UART1_Write('.');
+	MOVLW       46
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,267 :: 		UART1_Write(long_second_s[0]);
+	MOVF        _long_second_s+0, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,268 :: 		UART1_Write(long_second_s[1]);
+	MOVF        _long_second_s+1, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,269 :: 		UART1_Write(long_second_s[2]);
+	MOVF        _long_second_s+2, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,270 :: 		UART1_Write(long_second_s[3]);
+	MOVF        _long_second_s+3, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,271 :: 		UART1_Write(long_second_s[5]);
+	MOVF        _long_second_s+5, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,272 :: 		UART1_Write(long_second_s[6]);
+	MOVF        _long_second_s+6, 0 
+	MOVWF       FARG_UART1_Write_data_+0 
+	CALL        _UART1_Write+0, 0
+;GPS_Parser.c,273 :: 		UART1_Write_Text("&phoneNumber=");
 	MOVLW       ?lstr14_GPS_Parser+0
 	MOVWF       FARG_UART1_Write_Text_uart_text+0 
 	MOVLW       hi_addr(?lstr14_GPS_Parser+0)
 	MOVWF       FARG_UART1_Write_Text_uart_text+1 
 	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,251 :: 		UART1_WRITE_TEXT("ALERT! Transmitter no: ");
-	MOVLW       ?lstr15_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr15_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,252 :: 		UART1_WRITE_TEXT(phoneNumber);
+;GPS_Parser.c,274 :: 		UART1_WRITE_TEXT(phoneNumber);
 	MOVLW       _phoneNumber+0
 	MOVWF       FARG_UART1_Write_Text_uart_text+0 
 	MOVLW       hi_addr(_phoneNumber+0)
 	MOVWF       FARG_UART1_Write_Text_uart_text+1 
 	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,253 :: 		UART1_WRITE_TEXT(" to save to server and see location, use: https://rrs-receiver-website.herokuapp.com/transmitters/newtransmitter?latitude=");
-	MOVLW       ?lstr16_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr16_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,254 :: 		UART1_Write(lat_first[2]);
-	MOVF        _lat_first+2, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,255 :: 		UART1_Write(lat_first[1]);
-	MOVF        _lat_first+1, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,256 :: 		UART1_Write(lat_first[0]);
-	MOVF        _lat_first+0, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,257 :: 		UART1_Write(lat_second_s[0]);
-	MOVF        _lat_second_s+0, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,258 :: 		UART1_Write(lat_second_s[1]);
-	MOVF        _lat_second_s+1, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,259 :: 		UART1_Write(lat_second_s[2]);
-	MOVF        _lat_second_s+2, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,260 :: 		UART1_Write(lat_second_s[3]);
-	MOVF        _lat_second_s+3, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,261 :: 		UART1_Write(lat_second_s[5]);
-	MOVF        _lat_second_s+5, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,262 :: 		UART1_Write(lat_second_s[6]);
-	MOVF        _lat_second_s+6, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,263 :: 		UART1_Write_Text("&longitude=");
-	MOVLW       ?lstr17_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr17_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,264 :: 		UART1_Write(long_first[3]);
-	MOVF        _long_first+3, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,265 :: 		UART1_Write(long_first[2]);
-	MOVF        _long_first+2, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,266 :: 		UART1_Write(long_first[1]);
-	MOVF        _long_first+1, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,267 :: 		UART1_Write(long_first[0]);
-	MOVF        _long_first+0, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,268 :: 		UART1_Write(long_second_s[0]);
-	MOVF        _long_second_s+0, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,269 :: 		UART1_Write(long_second_s[1]);
-	MOVF        _long_second_s+1, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,270 :: 		UART1_Write(long_second_s[2]);
-	MOVF        _long_second_s+2, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,271 :: 		UART1_Write(long_second_s[3]);
-	MOVF        _long_second_s+3, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,272 :: 		UART1_Write(long_second_s[5]);
-	MOVF        _long_second_s+5, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,273 :: 		UART1_Write(long_second_s[6]);
-	MOVF        _long_second_s+6, 0 
-	MOVWF       FARG_UART1_Write_data_+0 
-	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,274 :: 		UART1_Write_Text("&phoneNumber=");
-	MOVLW       ?lstr18_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr18_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,275 :: 		UART1_WRITE_TEXT(phoneNumber);
-	MOVLW       _phoneNumber+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(_phoneNumber+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,276 :: 		delay_ms(500);
+;GPS_Parser.c,275 :: 		delay_ms(500);
 	MOVLW       6
 	MOVWF       R11, 0
 	MOVLW       19
@@ -1074,11 +1050,11 @@ L_sendStartSMS52:
 	BRA         L_sendStartSMS52
 	NOP
 	NOP
-;GPS_Parser.c,277 :: 		UART1_WRITE(26);
+;GPS_Parser.c,276 :: 		UART1_WRITE(26);
 	MOVLW       26
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,278 :: 		delay_ms(5000);
+;GPS_Parser.c,277 :: 		delay_ms(5000);
 	MOVLW       51
 	MOVWF       R11, 0
 	MOVLW       187
@@ -1094,7 +1070,7 @@ L_sendStartSMS53:
 	BRA         L_sendStartSMS53
 	NOP
 	NOP
-;GPS_Parser.c,279 :: 		delay_ms(2000);
+;GPS_Parser.c,278 :: 		delay_ms(2000);
 	MOVLW       21
 	MOVWF       R11, 0
 	MOVLW       75
@@ -1109,13 +1085,13 @@ L_sendStartSMS54:
 	DECFSZ      R11, 1, 1
 	BRA         L_sendStartSMS54
 	NOP
-;GPS_Parser.c,280 :: 		UART1_WRITE_TEXT("AT+CMGS=\"+639233205775\"\x0D");  // replace this with your phone number
-	MOVLW       ?lstr19_GPS_Parser+0
+;GPS_Parser.c,279 :: 		UART1_WRITE_TEXT("AT+CMGS=\"+639233205775\"\x0D");  // replace this with your phone number
+	MOVLW       ?lstr15_GPS_Parser+0
 	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr19_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr15_GPS_Parser+0)
 	MOVWF       FARG_UART1_Write_Text_uart_text+1 
 	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,281 :: 		delay_ms(1000);
+;GPS_Parser.c,280 :: 		delay_ms(1000);
 	MOVLW       11
 	MOVWF       R11, 0
 	MOVLW       38
@@ -1131,101 +1107,101 @@ L_sendStartSMS55:
 	BRA         L_sendStartSMS55
 	NOP
 	NOP
-;GPS_Parser.c,282 :: 		UART1_WRITE_TEXT("HELP! I am in danger, seek authorities/barangay officials. Coordinates: ");
-	MOVLW       ?lstr20_GPS_Parser+0
+;GPS_Parser.c,281 :: 		UART1_WRITE_TEXT("HELP! I am in danger, seek authorities/barangay officials. Coordinates: ");
+	MOVLW       ?lstr16_GPS_Parser+0
 	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr20_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr16_GPS_Parser+0)
 	MOVWF       FARG_UART1_Write_Text_uart_text+1 
 	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,283 :: 		UART1_Write_Text(" Latitude: ");
-	MOVLW       ?lstr21_GPS_Parser+0
+;GPS_Parser.c,282 :: 		UART1_Write_Text(" Latitude: ");
+	MOVLW       ?lstr17_GPS_Parser+0
 	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr21_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr17_GPS_Parser+0)
 	MOVWF       FARG_UART1_Write_Text_uart_text+1 
 	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,284 :: 		UART1_Write(lat_first[2]);
+;GPS_Parser.c,283 :: 		UART1_Write(lat_first[2]);
 	MOVF        _lat_first+2, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,285 :: 		UART1_Write(lat_first[1]);
+;GPS_Parser.c,284 :: 		UART1_Write(lat_first[1]);
 	MOVF        _lat_first+1, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,286 :: 		UART1_Write(lat_first[0]);
-	MOVF        _lat_first+0, 0 
+;GPS_Parser.c,285 :: 		UART1_Write('.');
+	MOVLW       46
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,287 :: 		UART1_Write(lat_second_s[0]);
+;GPS_Parser.c,286 :: 		UART1_Write(lat_second_s[0]);
 	MOVF        _lat_second_s+0, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,288 :: 		UART1_Write(lat_second_s[1]);
+;GPS_Parser.c,287 :: 		UART1_Write(lat_second_s[1]);
 	MOVF        _lat_second_s+1, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,289 :: 		UART1_Write(lat_second_s[2]);
+;GPS_Parser.c,288 :: 		UART1_Write(lat_second_s[2]);
 	MOVF        _lat_second_s+2, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,290 :: 		UART1_Write(lat_second_s[3]);
+;GPS_Parser.c,289 :: 		UART1_Write(lat_second_s[3]);
 	MOVF        _lat_second_s+3, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,291 :: 		UART1_Write(lat_second_s[5]);
+;GPS_Parser.c,290 :: 		UART1_Write(lat_second_s[5]);
 	MOVF        _lat_second_s+5, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,292 :: 		UART1_Write(lat_second_s[6]);
+;GPS_Parser.c,291 :: 		UART1_Write(lat_second_s[6]);
 	MOVF        _lat_second_s+6, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,293 :: 		UART1_Write_Text(" Longitude: ");
-	MOVLW       ?lstr22_GPS_Parser+0
+;GPS_Parser.c,292 :: 		UART1_Write_Text(" Longitude: ");
+	MOVLW       ?lstr18_GPS_Parser+0
 	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr22_GPS_Parser+0)
+	MOVLW       hi_addr(?lstr18_GPS_Parser+0)
 	MOVWF       FARG_UART1_Write_Text_uart_text+1 
 	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,294 :: 		UART1_Write(long_first[3]);
-	MOVF        _long_first+3, 0 
+;GPS_Parser.c,293 :: 		UART1_Write('1');
+	MOVLW       49
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,295 :: 		UART1_Write(long_first[2]);
-	MOVF        _long_first+2, 0 
+;GPS_Parser.c,294 :: 		UART1_Write('2');
+	MOVLW       50
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,296 :: 		UART1_Write(long_first[1]);
-	MOVF        _long_first+1, 0 
+;GPS_Parser.c,295 :: 		UART1_Write('2');
+	MOVLW       50
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,297 :: 		UART1_Write(long_first[0]);
-	MOVF        _long_first+0, 0 
+;GPS_Parser.c,296 :: 		UART1_Write('.');
+	MOVLW       46
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,298 :: 		UART1_Write(long_second_s[0]);
+;GPS_Parser.c,297 :: 		UART1_Write(long_second_s[0]);
 	MOVF        _long_second_s+0, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,299 :: 		UART1_Write(long_second_s[1]);
+;GPS_Parser.c,298 :: 		UART1_Write(long_second_s[1]);
 	MOVF        _long_second_s+1, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,300 :: 		UART1_Write(long_second_s[2]);
+;GPS_Parser.c,299 :: 		UART1_Write(long_second_s[2]);
 	MOVF        _long_second_s+2, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,301 :: 		UART1_Write(long_second_s[3]);
+;GPS_Parser.c,300 :: 		UART1_Write(long_second_s[3]);
 	MOVF        _long_second_s+3, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,302 :: 		UART1_Write(long_second_s[5]);
+;GPS_Parser.c,301 :: 		UART1_Write(long_second_s[5]);
 	MOVF        _long_second_s+5, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,303 :: 		UART1_Write(long_second_s[6]);
+;GPS_Parser.c,302 :: 		UART1_Write(long_second_s[6]);
 	MOVF        _long_second_s+6, 0 
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,304 :: 		delay_ms(500);
+;GPS_Parser.c,303 :: 		delay_ms(500);
 	MOVLW       6
 	MOVWF       R11, 0
 	MOVLW       19
@@ -1241,11 +1217,11 @@ L_sendStartSMS56:
 	BRA         L_sendStartSMS56
 	NOP
 	NOP
-;GPS_Parser.c,305 :: 		UART1_WRITE(26);
+;GPS_Parser.c,304 :: 		UART1_WRITE(26);
 	MOVLW       26
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
-;GPS_Parser.c,306 :: 		delay_ms(5000);
+;GPS_Parser.c,305 :: 		delay_ms(5000);
 	MOVLW       51
 	MOVWF       R11, 0
 	MOVLW       187
@@ -1261,81 +1237,63 @@ L_sendStartSMS57:
 	BRA         L_sendStartSMS57
 	NOP
 	NOP
-;GPS_Parser.c,307 :: 		}
+;GPS_Parser.c,306 :: 		}
 L_end_sendStartSMS:
 	RETURN      0
 ; end of _sendStartSMS
 
 _vibrate:
 
-;GPS_Parser.c,309 :: 		void vibrate()
-;GPS_Parser.c,311 :: 		while(isComplete == 0)
+;GPS_Parser.c,308 :: 		void vibrate()
+;GPS_Parser.c,310 :: 		while(isComplete == 0)
 L_vibrate58:
 	MOVF        _isComplete+0, 0 
 	XORLW       0
 	BTFSS       STATUS+0, 2 
 	GOTO        L_vibrate59
-;GPS_Parser.c,313 :: 		check_button3();
+;GPS_Parser.c,312 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,314 :: 		vDuration = vDuration - 1;
+;GPS_Parser.c,313 :: 		vDuration = vDuration - 1;
 	MOVLW       1
 	SUBWF       _vDuration+0, 1 
 	MOVLW       0
 	SUBWFB      _vDuration+1, 1 
-;GPS_Parser.c,315 :: 		if(Confirm == 1)
+;GPS_Parser.c,314 :: 		if(Confirm == 1)
 	MOVF        _Confirm+0, 0 
 	XORLW       1
 	BTFSS       STATUS+0, 2 
 	GOTO        L_vibrate60
-;GPS_Parser.c,317 :: 		PORTD.B0 = 0;
+;GPS_Parser.c,316 :: 		PORTD.B0 = 0;
 	BCF         PORTD+0, 0 
-;GPS_Parser.c,318 :: 		isComplete = 1;
+;GPS_Parser.c,317 :: 		isComplete = 1;
 	MOVLW       1
 	MOVWF       _isComplete+0 
-;GPS_Parser.c,319 :: 		UART1_Write_Text("CANCEL BUTTON PRESSED!\x0D");
-	MOVLW       ?lstr23_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr23_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,320 :: 		}else if(vDuration == 0)
+;GPS_Parser.c,319 :: 		}else if(vDuration == 0)
 	GOTO        L_vibrate61
 L_vibrate60:
 	MOVLW       0
 	XORWF       _vDuration+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__vibrate111
+	GOTO        L__vibrate107
 	MOVLW       0
 	XORWF       _vDuration+0, 0 
-L__vibrate111:
+L__vibrate107:
 	BTFSS       STATUS+0, 2 
 	GOTO        L_vibrate62
-;GPS_Parser.c,322 :: 		PORTD.B0 = 0;
+;GPS_Parser.c,321 :: 		PORTD.B0 = 0;
 	BCF         PORTD+0, 0 
-;GPS_Parser.c,323 :: 		isComplete = 1;
+;GPS_Parser.c,322 :: 		isComplete = 1;
 	MOVLW       1
 	MOVWF       _isComplete+0 
-;GPS_Parser.c,324 :: 		UART1_Write_Text("Exceeded Duration Limit, proceeding to send SMS...\x0D");
-	MOVLW       ?lstr24_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr24_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,325 :: 		}else
+;GPS_Parser.c,324 :: 		}else
 	GOTO        L_vibrate63
 L_vibrate62:
-;GPS_Parser.c,327 :: 		UART1_Write_Text("Vibrate\x0D");
-	MOVLW       ?lstr25_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr25_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,328 :: 		isComplete = 0;
+;GPS_Parser.c,327 :: 		isComplete = 0;
 	CLRF        _isComplete+0 
-;GPS_Parser.c,329 :: 		}
+;GPS_Parser.c,328 :: 		}
 L_vibrate63:
 L_vibrate61:
-;GPS_Parser.c,330 :: 		delay_ms(100);
+;GPS_Parser.c,329 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1350,9 +1308,9 @@ L_vibrate64:
 	DECFSZ      R11, 1, 1
 	BRA         L_vibrate64
 	NOP
-;GPS_Parser.c,331 :: 		check_button3();
+;GPS_Parser.c,330 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,332 :: 		delay_ms(100);
+;GPS_Parser.c,331 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1367,9 +1325,9 @@ L_vibrate65:
 	DECFSZ      R11, 1, 1
 	BRA         L_vibrate65
 	NOP
-;GPS_Parser.c,333 :: 		check_button3();
+;GPS_Parser.c,332 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,334 :: 		delay_ms(100);
+;GPS_Parser.c,333 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1384,9 +1342,9 @@ L_vibrate66:
 	DECFSZ      R11, 1, 1
 	BRA         L_vibrate66
 	NOP
-;GPS_Parser.c,335 :: 		check_button3();
+;GPS_Parser.c,334 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,336 :: 		delay_ms(100);
+;GPS_Parser.c,335 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1401,9 +1359,9 @@ L_vibrate67:
 	DECFSZ      R11, 1, 1
 	BRA         L_vibrate67
 	NOP
-;GPS_Parser.c,337 :: 		check_button3();
+;GPS_Parser.c,336 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,338 :: 		delay_ms(100);
+;GPS_Parser.c,337 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1418,9 +1376,9 @@ L_vibrate68:
 	DECFSZ      R11, 1, 1
 	BRA         L_vibrate68
 	NOP
-;GPS_Parser.c,339 :: 		check_button3();
+;GPS_Parser.c,338 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,340 :: 		delay_ms(100);
+;GPS_Parser.c,339 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1435,9 +1393,9 @@ L_vibrate69:
 	DECFSZ      R11, 1, 1
 	BRA         L_vibrate69
 	NOP
-;GPS_Parser.c,341 :: 		check_button3();
+;GPS_Parser.c,340 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,342 :: 		delay_ms(100);
+;GPS_Parser.c,341 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1452,9 +1410,9 @@ L_vibrate70:
 	DECFSZ      R11, 1, 1
 	BRA         L_vibrate70
 	NOP
-;GPS_Parser.c,343 :: 		check_button3();
+;GPS_Parser.c,342 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,344 :: 		delay_ms(100);
+;GPS_Parser.c,343 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1469,9 +1427,9 @@ L_vibrate71:
 	DECFSZ      R11, 1, 1
 	BRA         L_vibrate71
 	NOP
-;GPS_Parser.c,345 :: 		check_button3();
+;GPS_Parser.c,344 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,346 :: 		delay_ms(100);
+;GPS_Parser.c,345 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1486,36 +1444,36 @@ L_vibrate72:
 	DECFSZ      R11, 1, 1
 	BRA         L_vibrate72
 	NOP
-;GPS_Parser.c,347 :: 		check_button3();
+;GPS_Parser.c,346 :: 		check_button3();
 	CALL        _check_button3+0, 0
-;GPS_Parser.c,348 :: 		}
+;GPS_Parser.c,347 :: 		}
 	GOTO        L_vibrate58
 L_vibrate59:
-;GPS_Parser.c,349 :: 		isComplete = 0;
+;GPS_Parser.c,348 :: 		isComplete = 0;
 	CLRF        _isComplete+0 
-;GPS_Parser.c,350 :: 		vDuration = 9; // reset to default
-	MOVLW       9
+;GPS_Parser.c,349 :: 		vDuration = 8; // reset to default
+	MOVLW       8
 	MOVWF       _vDuration+0 
 	MOVLW       0
 	MOVWF       _vDuration+1 
-;GPS_Parser.c,351 :: 		}
+;GPS_Parser.c,350 :: 		}
 L_end_vibrate:
 	RETURN      0
 ; end of _vibrate
 
 _main:
 
-;GPS_Parser.c,353 :: 		void main() {
-;GPS_Parser.c,354 :: 		init_pins();
+;GPS_Parser.c,352 :: 		void main() {
+;GPS_Parser.c,353 :: 		init_pins();
 	CALL        _init_pins+0, 0
-;GPS_Parser.c,355 :: 		UART1_init(9600);
+;GPS_Parser.c,354 :: 		UART1_init(9600);
 	BSF         BAUDCON+0, 3, 0
 	CLRF        SPBRGH+0 
 	MOVLW       207
 	MOVWF       SPBRG+0 
 	BSF         TXSTA+0, 2, 0
 	CALL        _UART1_Init+0, 0
-;GPS_Parser.c,356 :: 		Delay_ms(100); // Wait for UART module to stabilize
+;GPS_Parser.c,355 :: 		Delay_ms(100); // Wait for UART module to stabilize
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
@@ -1530,12 +1488,16 @@ L_main73:
 	DECFSZ      R11, 1, 1
 	BRA         L_main73
 	NOP
+;GPS_Parser.c,356 :: 		initGSM();     // AT init with baud rate config
+	CALL        _initGSM+0, 0
 ;GPS_Parser.c,357 :: 		PORTD.B0 = 0;
 	BCF         PORTD+0, 0 
 ;GPS_Parser.c,359 :: 		while (1) {
 L_main74:
 ;GPS_Parser.c,360 :: 		check_button1();
 	CALL        _check_button1+0, 0
+;GPS_Parser.c,361 :: 		check_button2();
+	CALL        _check_button2+0, 0
 ;GPS_Parser.c,362 :: 		if(Send_Ready == 1 && Is_Duplicate == 1)
 	MOVF        _Send_Ready+0, 0 
 	XORLW       1
@@ -1545,7 +1507,7 @@ L_main74:
 	XORLW       1
 	BTFSS       STATUS+0, 2 
 	GOTO        L_main78
-L__main99:
+L__main95:
 ;GPS_Parser.c,364 :: 		if(Normal == 1)
 	MOVF        _Normal+0, 0 
 	XORLW       1
@@ -1577,114 +1539,128 @@ L_main82:
 	CLRF        _cooldown+0 
 ;GPS_Parser.c,376 :: 		gps_taken = 0;
 	CLRF        _gps_taken+0 
-;GPS_Parser.c,377 :: 		initGSM();     // AT init with baud rate config
-	CALL        _initGSM+0, 0
-;GPS_Parser.c,378 :: 		sendStartSMS();  // Send SMS
+;GPS_Parser.c,377 :: 		sendStartSMS();  // Send SMS
 	CALL        _sendStartSMS+0, 0
-;GPS_Parser.c,379 :: 		}
-L_main80:
-;GPS_Parser.c,381 :: 		while(isComplete == 0)
+;GPS_Parser.c,380 :: 		delay_ms(100);
+	MOVLW       2
+	MOVWF       R11, 0
+	MOVLW       4
+	MOVWF       R12, 0
+	MOVLW       186
+	MOVWF       R13, 0
 L_main83:
-	MOVF        _isComplete+0, 0 
-	XORLW       0
-	BTFSS       STATUS+0, 2 
-	GOTO        L_main84
-;GPS_Parser.c,383 :: 		check_button3();
-	CALL        _check_button3+0, 0
-;GPS_Parser.c,384 :: 		if(Confirm == 1)
-	MOVF        _Confirm+0, 0 
-	XORLW       1
-	BTFSS       STATUS+0, 2 
-	GOTO        L_main85
-;GPS_Parser.c,386 :: 		isComplete = 1;
-	MOVLW       1
-	MOVWF       _isComplete+0 
-;GPS_Parser.c,387 :: 		PORTD.B1 = 0;
-	BCF         PORTD+0, 1 
-;GPS_Parser.c,388 :: 		}
-L_main85:
-;GPS_Parser.c,389 :: 		}
-	GOTO        L_main83
+	DECFSZ      R13, 1, 1
+	BRA         L_main83
+	DECFSZ      R12, 1, 1
+	BRA         L_main83
+	DECFSZ      R11, 1, 1
+	BRA         L_main83
+	NOP
+;GPS_Parser.c,381 :: 		PORTD.B0 = 1;    // feedback, sign that sms is sent
+	BSF         PORTD+0, 0 
+;GPS_Parser.c,382 :: 		delay_ms(2000);
+	MOVLW       21
+	MOVWF       R11, 0
+	MOVLW       75
+	MOVWF       R12, 0
+	MOVLW       190
+	MOVWF       R13, 0
 L_main84:
-;GPS_Parser.c,390 :: 		delay_ms(1000);
+	DECFSZ      R13, 1, 1
+	BRA         L_main84
+	DECFSZ      R12, 1, 1
+	BRA         L_main84
+	DECFSZ      R11, 1, 1
+	BRA         L_main84
+	NOP
+;GPS_Parser.c,383 :: 		PORTD.B0 = 0;
+	BCF         PORTD+0, 0 
+;GPS_Parser.c,393 :: 		}
+L_main80:
+;GPS_Parser.c,395 :: 		delay_ms(1000);
 	MOVLW       11
 	MOVWF       R11, 0
 	MOVLW       38
 	MOVWF       R12, 0
 	MOVLW       93
 	MOVWF       R13, 0
-L_main86:
+L_main85:
 	DECFSZ      R13, 1, 1
-	BRA         L_main86
+	BRA         L_main85
 	DECFSZ      R12, 1, 1
-	BRA         L_main86
+	BRA         L_main85
 	DECFSZ      R11, 1, 1
-	BRA         L_main86
+	BRA         L_main85
 	NOP
 	NOP
-;GPS_Parser.c,391 :: 		Send_Ready = 0;
+;GPS_Parser.c,396 :: 		Send_Ready = 0;
 	CLRF        _Send_Ready+0 
-;GPS_Parser.c,392 :: 		Auto = 0;
+;GPS_Parser.c,397 :: 		Auto = 0;
 	CLRF        _Auto+0 
-;GPS_Parser.c,393 :: 		Normal = 0;
+;GPS_Parser.c,398 :: 		Normal = 0;
 	CLRF        _Normal+0 
-;GPS_Parser.c,394 :: 		Confirm = 0;
+;GPS_Parser.c,399 :: 		Confirm = 0;
 	CLRF        _Confirm+0 
-;GPS_Parser.c,395 :: 		isComplete = 0;
+;GPS_Parser.c,400 :: 		isComplete = 0;
 	CLRF        _isComplete+0 
-;GPS_Parser.c,396 :: 		}else if(Auto == 1)
-	GOTO        L_main87
+;GPS_Parser.c,401 :: 		}else if(Auto == 1)
+	GOTO        L_main86
 L_main79:
 	MOVF        _Auto+0, 0 
 	XORLW       1
 	BTFSS       STATUS+0, 2 
-	GOTO        L_main88
-;GPS_Parser.c,398 :: 		UART1_Write_Text("Mode 2: Automated... Initiating SENSOR...");
-	MOVLW       ?lstr26_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr26_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,399 :: 		act_sensor(); // sensor on
+	GOTO        L_main87
+;GPS_Parser.c,404 :: 		act_sensor(); // sensor on
 	CALL        _act_sensor+0, 0
-;GPS_Parser.c,401 :: 		if(confirm == 0)
+;GPS_Parser.c,405 :: 		Confirm = 0;
+	CLRF        _Confirm+0 
+;GPS_Parser.c,406 :: 		vibrate(); // check if false trigger
+	CALL        _vibrate+0, 0
+;GPS_Parser.c,407 :: 		if(confirm == 0)
 	MOVF        _Confirm+0, 0 
 	XORLW       0
 	BTFSS       STATUS+0, 2 
-	GOTO        L_main89
-;GPS_Parser.c,403 :: 		while(gps_taken == 0)
-L_main90:
+	GOTO        L_main88
+;GPS_Parser.c,409 :: 		while(gps_taken == 0)
+L_main89:
 	MOVF        _gps_taken+0, 0 
 	XORLW       0
 	BTFSS       STATUS+0, 2 
-	GOTO        L_main91
-;GPS_Parser.c,405 :: 		GPS_GetData();
-	CALL        _GPS_GetData+0, 0
-;GPS_Parser.c,406 :: 		}
 	GOTO        L_main90
-L_main91:
-;GPS_Parser.c,407 :: 		cooldown = 0;
+;GPS_Parser.c,411 :: 		GPS_GetData();
+	CALL        _GPS_GetData+0, 0
+;GPS_Parser.c,412 :: 		}
+	GOTO        L_main89
+L_main90:
+;GPS_Parser.c,413 :: 		cooldown = 0;
 	CLRF        _cooldown+0 
-;GPS_Parser.c,408 :: 		gps_taken = 0;
+;GPS_Parser.c,414 :: 		gps_taken = 0;
 	CLRF        _gps_taken+0 
-;GPS_Parser.c,409 :: 		initGSM();     // AT init with baud rate config
-	CALL        _initGSM+0, 0
-;GPS_Parser.c,410 :: 		sendStartSMS();  // Send SMS
+;GPS_Parser.c,415 :: 		sendStartSMS();  // Send SMS
 	CALL        _sendStartSMS+0, 0
-;GPS_Parser.c,412 :: 		PORTD.B1 = 1;   // record
-	BSF         PORTD+0, 1 
-;GPS_Parser.c,413 :: 		UART1_Write_Text("\x0D Starting recording... press cancel button to stop\x0D");
-	MOVLW       ?lstr27_GPS_Parser+0
-	MOVWF       FARG_UART1_Write_Text_uart_text+0 
-	MOVLW       hi_addr(?lstr27_GPS_Parser+0)
-	MOVWF       FARG_UART1_Write_Text_uart_text+1 
-	CALL        _UART1_Write_Text+0, 0
-;GPS_Parser.c,414 :: 		delay_ms(100);
+;GPS_Parser.c,418 :: 		delay_ms(100);
 	MOVLW       2
 	MOVWF       R11, 0
 	MOVLW       4
 	MOVWF       R12, 0
 	MOVLW       186
+	MOVWF       R13, 0
+L_main91:
+	DECFSZ      R13, 1, 1
+	BRA         L_main91
+	DECFSZ      R12, 1, 1
+	BRA         L_main91
+	DECFSZ      R11, 1, 1
+	BRA         L_main91
+	NOP
+;GPS_Parser.c,419 :: 		PORTD.B0 = 1;    // feedback, sign that sms is sent
+	BSF         PORTD+0, 0 
+;GPS_Parser.c,420 :: 		delay_ms(2000);
+	MOVLW       21
+	MOVWF       R11, 0
+	MOVLW       75
+	MOVWF       R12, 0
+	MOVLW       190
 	MOVWF       R13, 0
 L_main92:
 	DECFSZ      R13, 1, 1
@@ -1694,75 +1670,35 @@ L_main92:
 	DECFSZ      R11, 1, 1
 	BRA         L_main92
 	NOP
-;GPS_Parser.c,415 :: 		PORTD.B0 = 1;    // feedback, sign that sms is sent
-	BSF         PORTD+0, 0 
-;GPS_Parser.c,416 :: 		delay_ms(2000);
-	MOVLW       21
-	MOVWF       R11, 0
-	MOVLW       75
-	MOVWF       R12, 0
-	MOVLW       190
-	MOVWF       R13, 0
-L_main93:
-	DECFSZ      R13, 1, 1
-	BRA         L_main93
-	DECFSZ      R12, 1, 1
-	BRA         L_main93
-	DECFSZ      R11, 1, 1
-	BRA         L_main93
-	NOP
-;GPS_Parser.c,417 :: 		PORTD.B0 = 0;
+;GPS_Parser.c,421 :: 		PORTD.B0 = 0;
 	BCF         PORTD+0, 0 
-;GPS_Parser.c,418 :: 		}
-L_main89:
-;GPS_Parser.c,420 :: 		while(isComplete == 0)
-L_main94:
-	MOVF        _isComplete+0, 0 
-	XORLW       0
-	BTFSS       STATUS+0, 2 
-	GOTO        L_main95
-;GPS_Parser.c,422 :: 		check_button3();
-	CALL        _check_button3+0, 0
-;GPS_Parser.c,423 :: 		if(Confirm == 1)
-	MOVF        _Confirm+0, 0 
-	XORLW       1
-	BTFSS       STATUS+0, 2 
-	GOTO        L_main96
-;GPS_Parser.c,425 :: 		isComplete = 1;
-	MOVLW       1
-	MOVWF       _isComplete+0 
-;GPS_Parser.c,426 :: 		PORTD.B1 = 0;
-	BCF         PORTD+0, 1 
-;GPS_Parser.c,427 :: 		}
-L_main96:
-;GPS_Parser.c,428 :: 		}
-	GOTO        L_main94
-L_main95:
-;GPS_Parser.c,429 :: 		Send_Ready = 0;
-	CLRF        _Send_Ready+0 
-;GPS_Parser.c,430 :: 		Auto = 0;
-	CLRF        _Auto+0 
-;GPS_Parser.c,431 :: 		Confirm = 0;
-	CLRF        _Confirm+0 
-;GPS_Parser.c,432 :: 		isComplete = 0;
-	CLRF        _isComplete+0 
-;GPS_Parser.c,433 :: 		}else
-	GOTO        L_main97
+;GPS_Parser.c,422 :: 		}
 L_main88:
-;GPS_Parser.c,437 :: 		}
-L_main97:
+;GPS_Parser.c,433 :: 		Send_Ready = 0;
+	CLRF        _Send_Ready+0 
+;GPS_Parser.c,434 :: 		Auto = 0;
+	CLRF        _Auto+0 
+;GPS_Parser.c,435 :: 		Confirm = 0;
+	CLRF        _Confirm+0 
+;GPS_Parser.c,436 :: 		isComplete = 0;
+	CLRF        _isComplete+0 
+;GPS_Parser.c,437 :: 		}else
+	GOTO        L_main93
 L_main87:
-;GPS_Parser.c,438 :: 		}else
-	GOTO        L_main98
+;GPS_Parser.c,440 :: 		}
+L_main93:
+L_main86:
+;GPS_Parser.c,441 :: 		}else
+	GOTO        L_main94
 L_main78:
-;GPS_Parser.c,441 :: 		}
-L_main98:
-;GPS_Parser.c,442 :: 		Is_Duplicate = 1;
+;GPS_Parser.c,444 :: 		}
+L_main94:
+;GPS_Parser.c,445 :: 		Is_Duplicate = 1;
 	MOVLW       1
 	MOVWF       _Is_duplicate+0 
-;GPS_Parser.c,443 :: 		}
+;GPS_Parser.c,446 :: 		}
 	GOTO        L_main74
-;GPS_Parser.c,444 :: 		}
+;GPS_Parser.c,447 :: 		}
 L_end_main:
 	GOTO        $+0
 ; end of _main

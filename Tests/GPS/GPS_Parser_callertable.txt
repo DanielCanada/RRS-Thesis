@@ -2,11 +2,14 @@ main
 	__CC2DW
 	init_pins
 	UART1_Init
+	initGSM
+		Usend
+			UART1_Write_Text
+				UART1_Write
 	check_button1
+	check_button2
 	vibrate
 		check_button3
-		UART1_Write_Text
-			UART1_Write
 	GPS_GetData
 		sprinti
 			_doprnti
@@ -92,21 +95,9 @@ main
 			SETFOV32
 			SETFUN32
 		Compare_Double
-	initGSM
-		Usend
-			UART1_Write_Text
-				UART1_Write
 	sendStartSMS
-		Usend
-			UART1_Write_Text
-				UART1_Write
 		UART1_Write_Text
 			UART1_Write
-		UART1_Write
-	check_button3
-	UART1_Write_Text
 		UART1_Write
 	act_sensor
 		check_button3
-		UART1_Write_Text
-			UART1_Write

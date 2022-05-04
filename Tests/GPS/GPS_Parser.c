@@ -9,7 +9,7 @@ char Confirm = 0;
 char cooldown = 0;
 char gps_taken = 0;
 char isComplete = 0;
-int vDuration = 9; // fixed duration in case of false trigger
+int vDuration = 8; // fixed duration in case of false trigger
 
 // latitude variables
 char lat_first[3];
@@ -91,16 +91,16 @@ void check_button3()
         if(Confirm == 1)
         {
           isComplete = 1;
-          UART1_Write_Text("ABORT!\x0D");
+          //UART1_Write_Text("ABORT!\x0D");
           PORTD.B2 = 0;
         }else if(PORTD.B3 == 1)
         {
           isComplete = 1;
-          UART1_Write_Text("Detected abnormalities in sensor, proceeding to send SMS...\x0D");
+          //UART1_Write_Text("Detected abnormalities in sensor, proceeding to send SMS...\x0D");
           PORTD.B2 = 0;
         }else
         {
-          UART1_Write_Text("Sensor still in use\x0D");
+          //UART1_Write_Text("Sensor still in use\x0D");
           isComplete = 0;
         }
      }
@@ -121,14 +121,14 @@ void swap_raw_data()
   // whole numbers + decimal
   lat_first[2] = GPGGA_Data[11];
   lat_first[1] = GPGGA_Data[12];
-  lat_first[0] = GPGGA_Data[15];
+  lat_first[0] = '.';           //GPGGA_Data[15];
   //atoi substitute
   lat_second_i = ((lat_second_s[0] - '0') * 1000) + ((lat_second_s[1] - '0') * 100) + ((lat_second_s[2] - '0') * 10) + (lat_second_s[3] - '0');
   //place variables
   long_first[3] = GPGGA_Data[24];
   long_first[2] = GPGGA_Data[25];
   long_first[1] = GPGGA_Data[26];
-  long_first[0] = GPGGA_Data[29];
+  long_first[0] = '.';          //GPGGA_Data[29];
   long_second_s[0] = GPGGA_Data[27];
   long_second_s[1] = GPGGA_Data[28];
   long_second_s[2] = GPGGA_Data[30];
@@ -182,7 +182,7 @@ void GPS_GetData(){
               sprintf(lat_second_s, "%8f", lat_second_f);
               /// longitude
               sprinti(clk2, "%8u", long_second_i);
-              long_second_f = (long_second_i + 0.125) / 0.6;
+              long_second_f = (long_second_i + 0.125) / 0.6; // 0.125 default
               if(long_second_f < 1000)
               {
                 sprintf(long_second_s2, "%8f", long_second_f);
@@ -225,9 +225,9 @@ void init_pins()
    TRISB.B6 = 1; // input
    TRISB.B5 = 1; // input
    TRISD.B0 = 0; // Output Comm with ESP
-   TRISD.F1 = 0; // Output Vibration Motor
-   TRISD.F2 = 0; // Output Heart Rate Sensor
-   TRISD.F3 = 1; // input - acceptable BPM?
+   TRISD.B1 = 0; // Output Vibration Motor
+   TRISD.B2 = 0; // Output Heart Rate Sensor
+   TRISD.B3 = 1; // input - acceptable BPM?
    Send_Ready = 0;
    Auto = 0;
    Normal = 0;
@@ -247,13 +247,12 @@ void sendStartSMS()
 {
    UART1_WRITE_TEXT("AT+CMGS=\"+639153013461\"\x0D");  // replace this with your phone number
    delay_ms(1000);
-   UART1_WRITE_TEXT("SYSTEM READY || ");
    UART1_WRITE_TEXT("ALERT! Transmitter no: ");
    UART1_WRITE_TEXT(phoneNumber);
    UART1_WRITE_TEXT(" to save to server and see location, use: https://rrs-receiver-website.herokuapp.com/transmitters/newtransmitter?latitude=");
    UART1_Write(lat_first[2]);
    UART1_Write(lat_first[1]);
-   UART1_Write(lat_first[0]);
+   UART1_Write('.');
    UART1_Write(lat_second_s[0]);
    UART1_Write(lat_second_s[1]);
    UART1_Write(lat_second_s[2]);
@@ -261,10 +260,10 @@ void sendStartSMS()
    UART1_Write(lat_second_s[5]);
    UART1_Write(lat_second_s[6]);
    UART1_Write_Text("&longitude=");
-   UART1_Write(long_first[3]);
-   UART1_Write(long_first[2]);
-   UART1_Write(long_first[1]);
-   UART1_Write(long_first[0]);
+   UART1_Write('1');
+   UART1_Write('2');
+   UART1_Write('2');
+   UART1_Write('.');
    UART1_Write(long_second_s[0]);
    UART1_Write(long_second_s[1]);
    UART1_Write(long_second_s[2]);
@@ -283,7 +282,7 @@ void sendStartSMS()
    UART1_Write_Text(" Latitude: ");
    UART1_Write(lat_first[2]);
    UART1_Write(lat_first[1]);
-   UART1_Write(lat_first[0]);
+   UART1_Write('.');
    UART1_Write(lat_second_s[0]);
    UART1_Write(lat_second_s[1]);
    UART1_Write(lat_second_s[2]);
@@ -291,10 +290,10 @@ void sendStartSMS()
    UART1_Write(lat_second_s[5]);
    UART1_Write(lat_second_s[6]);
    UART1_Write_Text(" Longitude: ");
-   UART1_Write(long_first[3]);
-   UART1_Write(long_first[2]);
-   UART1_Write(long_first[1]);
-   UART1_Write(long_first[0]);
+   UART1_Write('1');
+   UART1_Write('2');
+   UART1_Write('2');
+   UART1_Write('.');
    UART1_Write(long_second_s[0]);
    UART1_Write(long_second_s[1]);
    UART1_Write(long_second_s[2]);
@@ -316,15 +315,15 @@ void sendStartSMS()
         {
           PORTD.B0 = 0;
           isComplete = 1;
-          UART1_Write_Text("CANCEL BUTTON PRESSED!\x0D");
+          //UART1_Write_Text("CANCEL BUTTON PRESSED!\x0D");
         }else if(vDuration == 0)
         {
           PORTD.B0 = 0;
           isComplete = 1;
-          UART1_Write_Text("Exceeded Duration Limit, proceeding to send SMS...\x0D");
+          //UART1_Write_Text("Exceeded Duration Limit, proceeding to send SMS...\x0D");
         }else
         {
-          UART1_Write_Text("Vibrate\x0D");
+          //UART1_Write_Text("Vibrate\x0D");
           isComplete = 0;
         }
         delay_ms(100);
@@ -347,7 +346,7 @@ void sendStartSMS()
         check_button3();
      }
      isComplete = 0;
-     vDuration = 9; // reset to default
+     vDuration = 8; // reset to default
  }
 
 void main() {
@@ -359,7 +358,7 @@ void main() {
 
   while (1) {
    check_button1();
-   //check_button2();
+   check_button2();
    if(Send_Ready == 1 && Is_Duplicate == 1)
    {
      if(Normal == 1)
@@ -376,13 +375,13 @@ void main() {
          cooldown = 0;
          gps_taken = 0;
          sendStartSMS();  // Send SMS
-         PORTD.B1 = 1;   // record
-         UART1_Write_Text("\x0D Starting recording... press cancel button to stop\x0D");
+         //PORTD.B1 = 1;   // record
+         //UART1_Write_Text("\x0D Starting recording... press cancel button to stop\x0D");
          delay_ms(100);
          PORTD.B0 = 1;    // feedback, sign that sms is sent
-         delay_ms(1000);
+         delay_ms(2000);
          PORTD.B0 = 0;
-         while(isComplete == 0)
+         /*while(isComplete == 0)
          {
            check_button3();
            if(Confirm == 1)
@@ -390,7 +389,7 @@ void main() {
              isComplete = 1;
              PORTD.B1 = 0;
            }
-         }
+         }*/
        }
        // record (?)
        delay_ms(1000);
@@ -401,9 +400,10 @@ void main() {
        isComplete = 0;
      }else if(Auto == 1)
      {
-       UART1_Write_Text("Mode 2: Automated... Initiating SENSOR...");
+       //UART1_Write_Text("Mode 2: Automated... Initiating SENSOR...");
        act_sensor(); // sensor on
-
+       Confirm = 0;
+       vibrate(); // check if false trigger
        if(confirm == 0)
        {
           while(gps_taken == 0)
@@ -413,15 +413,15 @@ void main() {
          cooldown = 0;
          gps_taken = 0;
          sendStartSMS();  // Send SMS
-         PORTD.B1 = 1;   // record
-         UART1_Write_Text("\x0D Starting recording... press cancel button to stop\x0D");
+         //PORTD.B1 = 1;   // record
+         //UART1_Write_Text("\x0D Starting recording... press cancel button to stop\x0D");
          delay_ms(100);
          PORTD.B0 = 1;    // feedback, sign that sms is sent
          delay_ms(2000);
          PORTD.B0 = 0;
        }
        // record (?)
-       while(isComplete == 0)
+       /*while(isComplete == 0)
        {
          check_button3();
          if(Confirm == 1)
@@ -429,14 +429,13 @@ void main() {
            isComplete = 1;
            PORTD.B1 = 0;
          }
-       }
+       }*/
        Send_Ready = 0;
        Auto = 0;
        Confirm = 0;
        isComplete = 0;
      }else
      {
-       //break;
        // do nothing;
      }
    }else

@@ -18,7 +18,7 @@ char q, error, byte_read;
 
 void suart()
 {
-  error = Soft_UART_Init(&PORTD, 7, 6, 4800, 0); // Initialize Soft UART at 9600 bps
+  error = Soft_UART_Init(&PORTD, 7, 6, 9600, 0); // Initialize Soft UART at 9600 bps
   if (error > 0) {
     UART1_Write_Text("FAIL!\x0D");
     UART1_Write(error);                          // Signalize Init error
@@ -49,26 +49,30 @@ void parse()
   RcvdConf = 2;
   if(RcvdConf == 2)
   {
-      UART1_Write_Text("Number: ");
-      for(x = 7;x < 20;x++)
+      UART1_Write_Text("New Admin Number: ");
+      for(x = 6;x < 19;x++)
       {
-          MsgMob[x-7] = RcvdMsg[x];
-          UART1_Write(MsgMob[x-7]);
+          if(RcvdMsg[5]='w')  // MsgMob default
+          {
+            MsgMob[x-6] = RcvdMsg[x];
+            UART1_Write(MsgMob[x-6]);
+          }
+
       }
       UART1_Write(10);
       UART1_Write(13);
-      UART1_Write_Text("Message: ");
-      for(x = 47;x < 58;x++) // default MsgLength
+      //UART1_Write_Text("Message: ");
+      /*for(x = 47;x < 58;x++) // default MsgLength
       {
           MsgTxt[x-47] = RcvdMsg[x];
           UART1_Write(MsgTxt[x-47]);
-      }
+      }*/
       ClearBuffers();
   }
 }
 
 void main() {
-  UART1_Init(4800);               // Initialize UART module at 9600 bps
+  UART1_Init(9600);               // Initialize UART module at 9600 bps
   Delay_ms(100);                  // Wait for UART module to stabilize
   suart();
   IncData = 0;
@@ -88,10 +92,10 @@ void main() {
         {
             RcvdMsg[IncData] = byte_read;
             IncData++;
-            if(byte_read == '.')
+            if(byte_read == '\r')
             {
               IncData = 0;
-              UART1_Write(RcvdMsg[46]);
+              //UART1_Write(RcvdMsg[46]);
               parse();
               strcpy(RcvdMsg,"");
             }
