@@ -105,7 +105,6 @@ void check_button3()
  isComplete = 0;
  }
  }
- isComplete = 0;
  }
 
 void swap_raw_data()
@@ -179,11 +178,11 @@ void GPS_GetData(){
 
  sprinti(clk, "%8u", lat_second_i);
 
- lat_second_f = (lat_second_i + 0.25) / 0.6;
+ lat_second_f = (lat_second_i + 0.115) / 0.6;
  sprintf(lat_second_s, "%8f", lat_second_f);
 
  sprinti(clk2, "%8u", long_second_i);
- long_second_f = (long_second_i + 0.125) / 0.6;
+ long_second_f = (long_second_i + 0.117) / 0.6;
  if(long_second_f < 1000)
  {
  sprintf(long_second_s2, "%8f", long_second_f);
@@ -252,7 +251,7 @@ void sendStartSMS()
  UART1_WRITE_TEXT(phoneNumber);
  UART1_WRITE_TEXT(" to save to server and see location, use: https://rrs-receiver-website.herokuapp.com/transmitters/newtransmitter?latitude=");
  UART1_Write(lat_first[2]);
- UART1_Write(lat_first[1]);
+ UART1_Write('0');
  UART1_Write('.');
  UART1_Write(lat_second_s[0]);
  UART1_Write(lat_second_s[1]);
@@ -382,7 +381,7 @@ void main() {
  PORTD.B0 = 1;
  delay_ms(2000);
  PORTD.B0 = 0;
-#line 393 "C:/Users/User/Documents/Thesis/Tests/GPS/GPS_Parser.c"
+#line 392 "C:/Users/User/Documents/Thesis/Tests/GPS/GPS_Parser.c"
  }
 
  delay_ms(1000);
@@ -394,8 +393,13 @@ void main() {
  }else if(Auto == 1)
  {
 
+ PORTD.B0 = 1;
+ delay_ms(2000);
+ PORTD.B0 = 0;
  act_sensor();
  Confirm = 0;
+ isComplete = 0;
+ PORTD.B0 = 1;
  vibrate();
  if(confirm == 0)
  {
@@ -413,7 +417,7 @@ void main() {
  delay_ms(2000);
  PORTD.B0 = 0;
  }
-#line 433 "C:/Users/User/Documents/Thesis/Tests/GPS/GPS_Parser.c"
+#line 437 "C:/Users/User/Documents/Thesis/Tests/GPS/GPS_Parser.c"
  Send_Ready = 0;
  Auto = 0;
  Confirm = 0;

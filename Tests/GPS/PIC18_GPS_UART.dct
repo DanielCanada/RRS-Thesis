@@ -593,6 +593,7 @@ ircf2
 ircf2_bit
 irvst
 irvst_bit
+issend
 ivrst
 ivrst_bit
 lata
@@ -709,6 +710,7 @@ mul_32x32_u
 mul_8x8_s
 n
 n_bit
+newadmin
 not_a
 not_a_bit
 not_address
@@ -1035,6 +1037,7 @@ se0
 se0_bit
 sen
 sen_bit
+send
 sendb
 sendb_bit
 setfdz32

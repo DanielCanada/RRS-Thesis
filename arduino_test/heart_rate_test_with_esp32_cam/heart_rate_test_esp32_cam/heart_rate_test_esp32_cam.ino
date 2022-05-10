@@ -63,8 +63,15 @@ void getMeasurements() {
             beatAvg += rates[x];
           beatAvg /= RATE_SIZE;
         }
-        if (beatAvg > 120){   // high BPM tolerance value
-          Serial.println("person is scared or running!");
+        if (beatAvg > 100){   // high BPM tolerance value
+          Serial.println("HIGH BPM DETECTED!");
+          isSent = 1;        // signal pic to send transmission
+          if(isSent == 1){
+            digitalWrite(2, HIGH);
+            delay(5000);
+            digitalWrite(2, LOW);
+            isSent = 2;
+          }
         }else{
           incap = false;
           isSent = 0;
@@ -79,7 +86,7 @@ void getMeasurements() {
     if (irValue < 7000){       //If no finger is detected or is not attached to wrist, it inform the user and put the average BPM to 0 or it will be stored for the next measure
       beatAvg=0;
       noReadings++;
-      if (noReadings > 1000){ // about 10 seconds of not detecting
+      if (noReadings > 950){ // about 10 seconds of not detecting
         incap = true;
         noReadings = 0;
       }
